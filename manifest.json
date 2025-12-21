@@ -1,6 +1,7 @@
+
 {
-  "name": "NutrAi",
-  "short_name": "NutrAi",
+  "name": "NitrAi",
+  "short_name": "NitrAi",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

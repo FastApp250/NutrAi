@@ -7,14 +7,10 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="description" content="NutrAi: Smart Nutrition AI app for Rwanda to prevent malnutrition. Track calories, iron, and vitamin A. Analyze meals with photos." />
-    <meta name="keywords" content="Rwanda nutrition, malnutrition prevention, AI meal tracker, calorie counter, iron deficiency, smart diet app" />
+    <meta name="description" content="NitrAi: Smart Nutrition AI app for Rwanda to prevent malnutrition. Track calories, iron, and vitamin A. Analyze meals with photos." />
+    <meta name="keywords" content="Rwanda nutrition, malnutrition prevention, AI meal tracker, calorie counter, iron deficiency, smart diet app, NitrAi" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
-    <link rel="preconnect" href="https://esm.sh" />
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
-    <link rel="dns-prefetch" href="https://esm.sh" />
-    <title>NutrAi - Smart Nutrition for Rwanda</title>
+    <title>NitrAi - Smart Nutrition for Rwanda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -38,32 +34,29 @@
         padding-top: env(safe-area-inset-top);
       }
     </style>
-  <script type="importmap">
+    <script>
+      // Simple service worker registration for production
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed', err));
+          });
+      }
+    </script>
+<script type="importmap">
 {
   "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
     "recharts": "https://esm.sh/recharts@^3.6.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "date-fns": "https://esm.sh/date-fns@^4.1.0",
-    "html5-qrcode": "https://esm.sh/html5-qrcode@2.3.8"
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "html5-qrcode": "https://esm.sh/html5-qrcode@^2.3.8"
   }
 }
-</script>
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('SW registered: ', registration);
-                })
-                .catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
-                });
-        });
-    }
 </script>
 </head>
   <body class="bg-gray-50 text-gray-900 antialiased overflow-hidden">

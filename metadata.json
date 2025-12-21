@@ -1,5 +1,5 @@
 {
-  "name": "NutrAi",
+  "name": "NitrAi",
   "description": "Smart Nutrition AI app tailored for Rwandan health, featuring meal tracking, AI analysis, and personalized plans.",
   "requestFramePermissions": [
     "camera",

@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AppState, UserProfile, MealLog, DraftMeal } from './types';
 
@@ -19,8 +20,8 @@ export const AppProvider = ({ children }: { children?: ReactNode }) => {
 
   // Load from local storage on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('nutrai_user');
-    const storedLogs = localStorage.getItem('nutrai_logs');
+    const storedUser = localStorage.getItem('nitrai_user');
+    const storedLogs = localStorage.getItem('nitrai_logs');
     
     if (storedUser) {
       setUserState(JSON.parse(storedUser));
@@ -34,14 +35,14 @@ export const AppProvider = ({ children }: { children?: ReactNode }) => {
   // Save to local storage on changes
   useEffect(() => {
     if (user) {
-      localStorage.setItem('nutrai_user', JSON.stringify(user));
+      localStorage.setItem('nitrai_user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('nutrai_user');
+      localStorage.removeItem('nitrai_user');
     }
   }, [user]);
 
   useEffect(() => {
-    localStorage.setItem('nutrai_logs', JSON.stringify(logs));
+    localStorage.setItem('nitrai_logs', JSON.stringify(logs));
   }, [logs]);
 
   const setUser = (newUser: UserProfile) => {

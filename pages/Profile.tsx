@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useApp } from '../AppContext';
 import { Button, Card } from '../components/UI';
@@ -61,7 +62,7 @@ export const Profile = () => {
           <LogOut size={18} /> Sign Out
       </Button>
       
-      <p className="text-center text-[10px] text-gray-400 font-medium">NutrAi v1.0.2 • Rwanda</p>
+      <p className="text-center text-[10px] text-gray-400 font-medium">NitrAi v1.0.3 • Rwanda</p>
     </div>
   );
 };

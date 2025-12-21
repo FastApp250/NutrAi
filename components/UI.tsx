@@ -24,7 +24,7 @@ export const Logo = ({ size = "medium", className = "" }: { size?: "small" | "me
         </svg>
       </div>
       <span className={s.text}>
-        Nutr<span className="text-green-600">Ai</span>
+        Nitr<span className="text-green-600">Ai</span>
       </span>
     </div>
   );

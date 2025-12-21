@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'nutrai-v2';
+const CACHE_NAME = 'nitrai-v1';
 const urlsToCache = [
   '/',
   '/index.html',
