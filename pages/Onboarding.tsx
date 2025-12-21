@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { generateOnboardingProfile } from '../geminiService';
 import { useApp } from '../AppContext';
 import { Button, InputField, Logo } from '../components/UI';
-import { Loader2, ArrowRight, ArrowLeft, User, Target, Ruler, Zap, ShieldCheck, Heart, Smile, Droplets, Users, Check, PieChart, Download } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, Target, Ruler, Zap, ShieldCheck, Heart, Smile, Droplets, Users, Check, PieChart, Download } from 'lucide-react';
 import { UserProfile } from '../types';
 
 const GENDERS = ['Male', 'Female', 'Other'];
@@ -159,13 +159,13 @@ export const Onboarding = () => {
     switch (step) {
       case 1: // Intro & Name
         return (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-8 animate-fade-in my-auto">
             <div className="space-y-4">
                 <div className="mb-6">
                     <Logo size="large" />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.welcomeTitle}</h2>
-                <p className="text-gray-500 font-medium">{t.welcomeSubtitle}</p>
+                <p className="text-gray-700 font-medium">{t.welcomeSubtitle}</p>
             </div>
             
             <InputField
@@ -185,7 +185,7 @@ export const Onboarding = () => {
                     className={`p-3 rounded-2xl text-sm font-semibold transition-all ${
                       formData.language === lang
                         ? 'bg-black text-white shadow-md'
-                        : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                        : 'bg-white/60 text-gray-700 hover:bg-white'
                     }`}
                   >
                     {lang}
@@ -196,7 +196,7 @@ export const Onboarding = () => {
 
             {/* PWA Install Button */}
             {deferredPrompt && (
-                <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl flex items-center justify-between">
+                <div className="bg-indigo-50/80 backdrop-blur-sm border border-indigo-100 p-4 rounded-2xl flex items-center justify-between">
                     <div>
                         <p className="text-indigo-900 font-bold text-sm">Get the App</p>
                         <p className="text-indigo-600 text-xs">Install for offline use</p>
@@ -214,13 +214,13 @@ export const Onboarding = () => {
         );
       case 2: // Stats
         return (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-8 animate-fade-in my-auto">
              <div className="space-y-2">
-                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4">
+                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg">
                     <Ruler size={24} />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.bodyStats}</h2>
-                <p className="text-gray-500 font-medium">{t.bodyStatsSubtitle}</p>
+                <p className="text-gray-700 font-medium">{t.bodyStatsSubtitle}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-5">
@@ -261,24 +261,25 @@ export const Onboarding = () => {
               />
             </div>
             <div className="flex gap-4 pt-8">
-                <Button variant="ghost" onClick={handleBack} className="w-auto px-0"><ArrowLeft size={20}/></Button>
+                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/50"><ArrowLeft size={20}/></Button>
                 <Button onClick={handleNext}>{t.continue} <ArrowRight size={18}/></Button>
             </div>
           </div>
         );
-      case 3: // Goals
+      case 3: // Goals - Fixed Scrolling
         return (
-          <div className="space-y-6 animate-fade-in flex flex-col h-full">
-             <div className="space-y-2 flex-shrink-0">
-                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4">
+          <div className="animate-fade-in flex flex-col h-full overflow-hidden">
+             <div className="space-y-2 flex-shrink-0 mb-4 pt-2">
+                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg">
                     <Target size={24} />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.yourGoals}</h2>
-                <p className="text-gray-500 font-medium">{t.goalsSubtitle}</p>
+                <p className="text-gray-700 font-medium">{t.goalsSubtitle}</p>
             </div>
 
-            <div className="flex-1 overflow-y-auto no-scrollbar -mx-2 px-2 pb-4">
-                <div className="grid grid-cols-2 gap-3">
+            {/* Scrollable Container */}
+            <div className="flex-1 overflow-y-auto no-scrollbar min-h-0 -mx-2 px-2 pb-4">
+                <div className="grid grid-cols-2 gap-3 pb-20"> {/* pb-20 adds buffer for bottom buttons */}
                   {GOAL_OPTIONS.map((goal) => {
                     const isSelected = formData.goals.includes(goal.label);
                     const Icon = goal.icon;
@@ -289,10 +290,10 @@ export const Onboarding = () => {
                           className={`p-4 rounded-3xl border text-left transition-all duration-200 flex flex-col justify-between h-32 relative overflow-hidden group ${
                             isSelected
                               ? 'border-black bg-black text-white shadow-lg shadow-black/20 scale-[1.02]'
-                              : 'border-transparent bg-gray-50 text-gray-600 hover:bg-gray-100'
+                              : 'border-transparent bg-white/70 backdrop-blur-sm text-gray-600 hover:bg-white shadow-sm'
                           }`}
                         >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 ${isSelected ? 'bg-white/20' : 'bg-white shadow-sm'}`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 ${isSelected ? 'bg-white/20' : 'bg-black/5 shadow-sm'}`}>
                                 <Icon size={20} className={isSelected ? 'text-white' : 'text-black'} />
                             </div>
                             <span className={`font-bold text-sm leading-tight ${isSelected ? 'text-white' : 'text-gray-900'}`}>{goal.label}</span>
@@ -308,8 +309,8 @@ export const Onboarding = () => {
                 </div>
             </div>
 
-             <div className="flex gap-4 pt-4 flex-shrink-0 bg-white border-t border-gray-100">
-                <Button variant="ghost" onClick={handleBack} className="w-auto px-0"><ArrowLeft size={20}/></Button>
+             <div className="flex gap-4 pt-4 pb-2 flex-shrink-0 border-t border-gray-200/20 bg-gradient-to-t from-teal-200/50 to-transparent">
+                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/50"><ArrowLeft size={20}/></Button>
                 <Button onClick={handleFinish} disabled={loading || formData.goals.length === 0}>
                     {loading ? <Loader2 className="w-5 h-5 animate-spin"/> : t.createPlan}
                 </Button>
@@ -322,13 +323,16 @@ export const Onboarding = () => {
   };
 
   return (
-    <div className="h-full bg-white p-6 pb-safe flex flex-col justify-center max-w-md mx-auto">
-        <div className="mb-6 flex gap-2 flex-shrink-0">
+    <div className="h-full w-full p-6 pb-safe flex flex-col max-w-md mx-auto">
+        <div className="mb-6 flex gap-2 flex-shrink-0 z-10">
             {[1, 2, 3].map(i => (
-                <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${i <= step ? 'bg-black' : 'bg-gray-100'}`} />
+                <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${i <= step ? 'bg-black' : 'bg-black/10'}`} />
             ))}
         </div>
-      {renderStep()}
+        {/* Main content container with flex-1 to fill space */}
+        <div className="flex-1 flex flex-col min-h-0 relative z-10">
+            {renderStep()}
+        </div>
     </div>
   );
 };
