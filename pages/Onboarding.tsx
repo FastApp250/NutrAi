@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateOnboardingProfile } from '../geminiService';
 import { useApp } from '../AppContext';
-import { Button, InputField } from '../components/UI';
+import { Button, InputField, Logo } from '../components/UI';
 import { Loader2, ArrowRight, ArrowLeft, User, Target, Ruler, Zap, ShieldCheck, Heart, Smile, Droplets, Users, Check, PieChart, Download } from 'lucide-react';
 import { UserProfile } from '../types';
 
@@ -160,9 +160,9 @@ export const Onboarding = () => {
       case 1: // Intro & Name
         return (
           <div className="space-y-8 animate-fade-in">
-            <div className="space-y-2">
-                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4">
-                    <User size={24} />
+            <div className="space-y-4">
+                <div className="mb-6">
+                    <Logo size="large" />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.welcomeTitle}</h2>
                 <p className="text-gray-500 font-medium">{t.welcomeSubtitle}</p>

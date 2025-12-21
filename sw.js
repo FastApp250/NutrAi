@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'nutrai-v1';
+const CACHE_NAME = 'nutrai-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -15,14 +16,55 @@ self.addEventListener('install', event => {
   );
 });
 
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  return self.clients.claim();
+});
+
 self.addEventListener('fetch', event => {
+  // Skip cross-origin requests that aren't GET or are from chrome extensions
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
+    caches.match(event.request).then(response => {
+      if (response) {
+        return response;
+      }
+      
+      const fetchRequest = event.request.clone();
+
+      return fetch(fetchRequest).then(networkResponse => {
+        // Check if we received a valid response
+        if (!networkResponse || networkResponse.status !== 200) {
+          return networkResponse;
         }
-        return fetch(event.request);
-      })
+
+        // Cache external resources (ESM, Tailwind) and local assets
+        const url = new URL(event.request.url);
+        const shouldCache = 
+            url.origin === location.origin || 
+            url.hostname === 'esm.sh' || 
+            url.hostname === 'cdn.tailwindcss.com';
+
+        if (shouldCache) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+        }
+
+        return networkResponse;
+      });
+    })
   );
 });

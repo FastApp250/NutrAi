@@ -1,5 +1,34 @@
+
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+
+export const Logo = ({ size = "medium", className = "" }: { size?: "small" | "medium" | "large"; className?: string }) => {
+  const dims = {
+    small: { icon: 20, text: "text-lg" },
+    medium: { icon: 32, text: "text-3xl" },
+    large: { icon: 48, text: "text-5xl" }
+  };
+  
+  const s = dims[size];
+
+  return (
+    <div className={`flex items-center gap-2.5 font-extrabold tracking-tight text-gray-900 ${className} select-none`}>
+      <div className="relative text-green-600 flex items-center justify-center">
+        {/* Abstract Leaf/Brain SVG */}
+        <svg width={s.icon} height={s.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeOpacity="0.1"/>
+            <path d="M12 6V18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M12 12L17 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M12 12L7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        </svg>
+      </div>
+      <span className={s.text}>
+        Nutr<span className="text-green-600">Ai</span>
+      </span>
+    </div>
+  );
+};
 
 export const Button = ({
   children,

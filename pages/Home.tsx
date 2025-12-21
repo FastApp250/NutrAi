@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../AppContext';
 import { generateDailyTip } from '../geminiService';
-import { Card, Button } from '../components/UI';
+import { Card, Button, Logo } from '../components/UI';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Plus, Flame, Sparkles, ChevronRight, Utensils, Droplets, Zap, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
@@ -58,13 +59,15 @@ export const Home = ({ onNavigate }: { onNavigate: (page: string) => void }) => 
     <div className="px-6 space-y-8 animate-fade-in">
       {/* Minimal Header */}
       <div className="flex justify-between items-center pt-2">
-        <div>
-            <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">{format(new Date(), 'EEEE, d MMM')}</p>
-            <h1 className="text-2xl font-bold text-gray-900 mt-1">Hello, {user.name.split(' ')[0]}</h1>
-        </div>
+        <Logo size="small" />
         <div onClick={() => onNavigate('profile')} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-900 font-bold border border-gray-200 cursor-pointer">
             {user.name.charAt(0).toUpperCase()}
         </div>
+      </div>
+
+      <div className="mb-2">
+            <h1 className="text-2xl font-bold text-gray-900">Hello, {user.name.split(' ')[0]}</h1>
+            <p className="text-sm font-medium text-gray-400">{format(new Date(), 'EEEE, d MMM')}</p>
       </div>
 
       {/* Main Nutrition Score Ring */}

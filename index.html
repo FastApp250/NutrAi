@@ -10,6 +10,10 @@
     <meta name="description" content="NutrAi: Smart Nutrition AI app for Rwanda to prevent malnutrition. Track calories, iron, and vitamin A. Analyze meals with photos." />
     <meta name="keywords" content="Rwanda nutrition, malnutrition prevention, AI meal tracker, calorie counter, iron deficiency, smart diet app" />
     <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+    <link rel="preconnect" href="https://esm.sh" />
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+    <link rel="dns-prefetch" href="https://esm.sh" />
     <title>NutrAi - Smart Nutrition for Rwanda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -64,5 +68,6 @@
 </head>
   <body class="bg-gray-50 text-gray-900 antialiased overflow-hidden">
     <div id="root" class="h-full w-full"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
