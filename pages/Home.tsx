@@ -4,11 +4,11 @@ import { useApp } from '../AppContext';
 import { generateDailyTip } from '../geminiService';
 import { Card, Button, Logo } from '../components/UI';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { Plus, Flame, Sparkles, ChevronRight, Utensils, Droplets, Zap, ShieldCheck } from 'lucide-react';
+import { Plus, Flame, Sparkles, ChevronRight, Utensils, Droplets, Zap, ShieldCheck, Download } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const Home = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
-  const { user, logs } = useApp();
+  const { user, logs, installPrompt, installApp } = useApp();
   const [tip, setTip] = useState<string>("Loading insight...");
 
   // Calculate daily totals
@@ -59,7 +59,18 @@ export const Home = ({ onNavigate }: { onNavigate: (page: string) => void }) => 
     <div className="px-6 space-y-8 animate-fade-in">
       {/* Minimal Header */}
       <div className="flex justify-between items-center pt-2">
-        <Logo size="small" />
+        <div className="flex items-center gap-3">
+            <Logo size="small" />
+            {installPrompt && (
+                <button 
+                    onClick={installApp} 
+                    className="w-8 h-8 bg-black/5 rounded-full flex items-center justify-center text-black border border-black/5 cursor-pointer hover:bg-black/10 transition-all animate-pulse shadow-sm"
+                    aria-label="Install App"
+                >
+                    <Download size={16} />
+                </button>
+            )}
+        </div>
         <div onClick={() => onNavigate('profile')} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-900 font-bold border border-gray-200 cursor-pointer">
             {user.name.charAt(0).toUpperCase()}
         </div>

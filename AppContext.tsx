@@ -8,6 +8,8 @@ interface AppContextType extends AppState {
   updateUser: (updates: Partial<UserProfile>) => void;
   clearSession: () => void;
   setDraftMeal: (draft: DraftMeal | null) => void;
+  installPrompt: any;
+  installApp: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -17,6 +19,7 @@ export const AppProvider = ({ children }: { children?: ReactNode }) => {
   const [logs, setLogs] = useState<MealLog[]>([]);
   const [draftMeal, setDraftMeal] = useState<DraftMeal | null>(null);
   const [loading, setLoading] = useState(true);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
 
   // Load from local storage on mount
   useEffect(() => {
@@ -45,6 +48,26 @@ export const AppProvider = ({ children }: { children?: ReactNode }) => {
     localStorage.setItem('nitrai_logs', JSON.stringify(logs));
   }, [logs]);
 
+  // Handle PWA Install Prompt
+  useEffect(() => {
+    const handler = (e: any) => {
+        e.preventDefault();
+        setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const installApp = async () => {
+    if (installPrompt) {
+        installPrompt.prompt();
+        const { outcome } = await installPrompt.userChoice;
+        if (outcome === 'accepted') {
+            setInstallPrompt(null);
+        }
+    }
+  };
+
   const setUser = (newUser: UserProfile) => {
     setUserState(newUser);
   };
@@ -67,7 +90,7 @@ export const AppProvider = ({ children }: { children?: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ user, logs, plans: [], loading, draftMeal, setUser, addLog, updateUser, clearSession, setDraftMeal }}>
+    <AppContext.Provider value={{ user, logs, plans: [], loading, draftMeal, setUser, addLog, updateUser, clearSession, setDraftMeal, installPrompt, installApp }}>
       {children}
     </AppContext.Provider>
   );

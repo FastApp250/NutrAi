@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { generateOnboardingProfile } from '../geminiService';
 import { useApp } from '../AppContext';
 import { Button, InputField, Logo } from '../components/UI';
@@ -74,10 +74,9 @@ const TRANSLATIONS = {
 };
 
 export const Onboarding = () => {
-  const { setUser } = useApp();
+  const { setUser, installPrompt, installApp } = useApp();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
     age: 25,
@@ -89,25 +88,6 @@ export const Onboarding = () => {
   });
 
   const t = TRANSLATIONS[formData.language] || TRANSLATIONS['English'];
-
-  useEffect(() => {
-    const handler = (e: any) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  const handleInstallClick = async () => {
-      if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-              setDeferredPrompt(null);
-          }
-      }
-  };
 
   const handleNext = () => setStep(prev => prev + 1);
   const handleBack = () => setStep(prev => prev - 1);
@@ -192,17 +172,22 @@ export const Onboarding = () => {
               </div>
             </div>
 
-            {deferredPrompt && (
-                <div className="bg-white/30 backdrop-blur-md border border-white/40 p-4 rounded-2xl flex items-center justify-between shadow-lg">
-                    <div>
-                        <p className="text-indigo-900 font-bold text-sm">Get the App</p>
-                        <p className="text-indigo-800 text-xs opacity-80">Install for offline use</p>
-                    </div>
-                    <button onClick={handleInstallClick} className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/30">
+            {/* Persistent Install Card */}
+            <div className="fixed bottom-24 left-6 right-6 z-50 bg-white/80 backdrop-blur-xl border border-white/50 p-4 rounded-3xl flex items-center justify-between shadow-2xl animate-bounce-slow">
+                <div>
+                    <p className="text-indigo-900 font-bold text-sm">Get the App</p>
+                    <p className="text-indigo-800 text-xs opacity-80">Install for offline use</p>
+                </div>
+                {installPrompt ? (
+                    <button onClick={installApp} className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/30 active:scale-95 transition-transform">
                         <Download size={14}/> {t.install}
                     </button>
-                </div>
-            )}
+                ) : (
+                    <button disabled className="bg-green-50 text-green-700 border border-green-100 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 opacity-80">
+                        <Check size={14}/> Installed
+                    </button>
+                )}
+            </div>
 
             <div className="pt-8">
                 <Button onClick={handleNext} disabled={!formData.name}>{t.continue} <ArrowRight size={18}/></Button>
