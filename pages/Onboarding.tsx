@@ -19,7 +19,6 @@ const GOAL_OPTIONS = [
   { id: 'family', label: 'Family & child health', icon: Users },
 ];
 
-// Translation Dictionary
 const TRANSLATIONS = {
     English: {
         welcomeTitle: "Let's get started",
@@ -91,7 +90,6 @@ export const Onboarding = () => {
 
   const t = TRANSLATIONS[formData.language] || TRANSLATIONS['English'];
 
-  // PWA Install Listener
   useEffect(() => {
     const handler = (e: any) => {
         e.preventDefault();
@@ -157,15 +155,15 @@ export const Onboarding = () => {
 
   const renderStep = () => {
     switch (step) {
-      case 1: // Intro & Name
+      case 1:
         return (
-          <div className="space-y-8 animate-fade-in my-auto">
+          <div className="flex flex-col h-full justify-center space-y-8 animate-fade-in p-2">
             <div className="space-y-4">
                 <div className="mb-6">
                     <Logo size="large" />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.welcomeTitle}</h2>
-                <p className="text-gray-700 font-medium">{t.welcomeSubtitle}</p>
+                <p className="text-gray-800 font-medium opacity-80">{t.welcomeSubtitle}</p>
             </div>
             
             <InputField
@@ -182,10 +180,10 @@ export const Onboarding = () => {
                   <button
                     key={lang}
                     onClick={() => setFormData({ ...formData, language: lang as any })}
-                    className={`p-3 rounded-2xl text-sm font-semibold transition-all ${
+                    className={`p-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-md ${
                       formData.language === lang
-                        ? 'bg-black text-white shadow-md'
-                        : 'bg-white/60 text-gray-700 hover:bg-white'
+                        ? 'bg-black text-white shadow-lg shadow-black/10'
+                        : 'bg-white/40 text-gray-800 hover:bg-white/60 border border-white/20'
                     }`}
                   >
                     {lang}
@@ -194,14 +192,13 @@ export const Onboarding = () => {
               </div>
             </div>
 
-            {/* PWA Install Button */}
             {deferredPrompt && (
-                <div className="bg-indigo-50/80 backdrop-blur-sm border border-indigo-100 p-4 rounded-2xl flex items-center justify-between">
+                <div className="bg-white/30 backdrop-blur-md border border-white/40 p-4 rounded-2xl flex items-center justify-between shadow-lg">
                     <div>
                         <p className="text-indigo-900 font-bold text-sm">Get the App</p>
-                        <p className="text-indigo-600 text-xs">Install for offline use</p>
+                        <p className="text-indigo-800 text-xs opacity-80">Install for offline use</p>
                     </div>
-                    <button onClick={handleInstallClick} className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
+                    <button onClick={handleInstallClick} className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/30">
                         <Download size={14}/> {t.install}
                     </button>
                 </div>
@@ -212,15 +209,15 @@ export const Onboarding = () => {
             </div>
           </div>
         );
-      case 2: // Stats
+      case 2:
         return (
-          <div className="space-y-8 animate-fade-in my-auto">
+          <div className="flex flex-col h-full justify-center space-y-8 animate-fade-in p-2">
              <div className="space-y-2">
-                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg">
+                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-xl shadow-black/10">
                     <Ruler size={24} />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.bodyStats}</h2>
-                <p className="text-gray-700 font-medium">{t.bodyStatsSubtitle}</p>
+                <p className="text-gray-800 font-medium opacity-80">{t.bodyStatsSubtitle}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-5">
@@ -236,11 +233,11 @@ export const Onboarding = () => {
                     <select
                         value={formData.gender}
                         onChange={(e) => setFormData({...formData, gender: e.target.value as UserProfile['gender']})}
-                        className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-0 text-gray-900 font-medium appearance-none outline-none focus:ring-2 focus:ring-black/5"
+                        className="w-full px-5 py-4 rounded-2xl bg-white/50 backdrop-blur-sm border-0 text-gray-900 font-medium appearance-none outline-none focus:ring-2 focus:ring-black/5"
                     >
                         {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                         <ArrowRight size={16} className="rotate-90" />
                     </div>
                 </div>
@@ -261,25 +258,26 @@ export const Onboarding = () => {
               />
             </div>
             <div className="flex gap-4 pt-8">
-                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/50"><ArrowLeft size={20}/></Button>
+                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/20 hover:bg-white/40"><ArrowLeft size={20}/></Button>
                 <Button onClick={handleNext}>{t.continue} <ArrowRight size={18}/></Button>
             </div>
           </div>
         );
-      case 3: // Goals - Fixed Scrolling
+      case 3: // Goals - Mobile Scrolling Fix & Glass UI
         return (
           <div className="animate-fade-in flex flex-col h-full overflow-hidden">
-             <div className="space-y-2 flex-shrink-0 mb-4 pt-2">
-                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg">
+             {/* Fixed Header */}
+             <div className="space-y-2 flex-shrink-0 mb-4 pt-2 px-2">
+                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-xl shadow-black/10">
                     <Target size={24} />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.yourGoals}</h2>
-                <p className="text-gray-700 font-medium">{t.goalsSubtitle}</p>
+                <p className="text-gray-800 font-medium opacity-80">{t.goalsSubtitle}</p>
             </div>
 
-            {/* Scrollable Container */}
-            <div className="flex-1 overflow-y-auto no-scrollbar min-h-0 -mx-2 px-2 pb-4">
-                <div className="grid grid-cols-2 gap-3 pb-20"> {/* pb-20 adds buffer for bottom buttons */}
+            {/* Scrollable Middle Content - Flex-1 ensures it fills space between header and footer */}
+            <div className="flex-1 overflow-y-auto no-scrollbar min-h-0 px-2 pb-6">
+                <div className="grid grid-cols-2 gap-3">
                   {GOAL_OPTIONS.map((goal) => {
                     const isSelected = formData.goals.includes(goal.label);
                     const Icon = goal.icon;
@@ -287,19 +285,19 @@ export const Onboarding = () => {
                         <button
                           key={goal.id}
                           onClick={() => toggleGoal(goal.label)}
-                          className={`p-4 rounded-3xl border text-left transition-all duration-200 flex flex-col justify-between h-32 relative overflow-hidden group ${
+                          className={`p-4 rounded-3xl border text-left transition-all duration-300 flex flex-col justify-between h-36 relative overflow-hidden group ${
                             isSelected
-                              ? 'border-black bg-black text-white shadow-lg shadow-black/20 scale-[1.02]'
-                              : 'border-transparent bg-white/70 backdrop-blur-sm text-gray-600 hover:bg-white shadow-sm'
+                              ? 'border-black/50 bg-black text-white shadow-xl shadow-black/20 scale-[1.02]'
+                              : 'border-white/10 bg-white/40 backdrop-blur-xl text-gray-800 hover:bg-white/60 shadow-lg shadow-emerald-900/5'
                           }`}
                         >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 ${isSelected ? 'bg-white/20' : 'bg-black/5 shadow-sm'}`}>
-                                <Icon size={20} className={isSelected ? 'text-white' : 'text-black'} />
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${isSelected ? 'bg-white/20' : 'bg-white/60 backdrop-blur-sm shadow-sm'}`}>
+                                <Icon size={20} className={isSelected ? 'text-white' : 'text-gray-900'} />
                             </div>
-                            <span className={`font-bold text-sm leading-tight ${isSelected ? 'text-white' : 'text-gray-900'}`}>{goal.label}</span>
+                            <span className={`font-bold text-sm leading-tight pr-2 ${isSelected ? 'text-white' : 'text-gray-900'}`}>{goal.label}</span>
                             
                             {isSelected && (
-                                <div className="absolute top-3 right-3 bg-white text-black rounded-full p-0.5">
+                                <div className="absolute top-3 right-3 bg-white text-black rounded-full p-0.5 animate-scale-in">
                                     <Check size={12} strokeWidth={4} />
                                 </div>
                             )}
@@ -309,9 +307,10 @@ export const Onboarding = () => {
                 </div>
             </div>
 
-             <div className="flex gap-4 pt-4 pb-2 flex-shrink-0 border-t border-gray-200/20 bg-gradient-to-t from-teal-200/50 to-transparent">
-                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/50"><ArrowLeft size={20}/></Button>
-                <Button onClick={handleFinish} disabled={loading || formData.goals.length === 0}>
+             {/* Fixed Footer ("Fixed on sky") */}
+             <div className="flex gap-4 pt-4 pb-0 flex-shrink-0 z-20 px-2 bg-gradient-to-t from-lime-300/20 to-transparent">
+                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/20 hover:bg-white/40 backdrop-blur-md"><ArrowLeft size={20}/></Button>
+                <Button onClick={handleFinish} disabled={loading || formData.goals.length === 0} className="shadow-xl shadow-black/10">
                     {loading ? <Loader2 className="w-5 h-5 animate-spin"/> : t.createPlan}
                 </Button>
             </div>
@@ -323,14 +322,16 @@ export const Onboarding = () => {
   };
 
   return (
+    // Enforce full height of viewport for mobile scrolling consistency
     <div className="h-full w-full p-6 pb-safe flex flex-col max-w-md mx-auto">
-        <div className="mb-6 flex gap-2 flex-shrink-0 z-10">
+        <div className="mb-6 flex gap-2 flex-shrink-0 z-10 px-2">
             {[1, 2, 3].map(i => (
                 <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${i <= step ? 'bg-black' : 'bg-black/10'}`} />
             ))}
         </div>
-        {/* Main content container with flex-1 to fill space */}
-        <div className="flex-1 flex flex-col min-h-0 relative z-10">
+        
+        {/* Step Content Container */}
+        <div className="flex-1 min-h-0 relative z-10">
             {renderStep()}
         </div>
     </div>
