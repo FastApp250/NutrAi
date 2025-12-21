@@ -81,6 +81,8 @@ export const analyzeMeal = async (
   description: string,
   userProfile?: UserProfile | null
 ): Promise<{ 
+  isFood: boolean;
+  message?: string;
   name: string; 
   calories: number; 
   protein: number; 
@@ -110,18 +112,21 @@ export const analyzeMeal = async (
       });
     }
 
-    let promptText = `Analyze this meal based on the input. `;
+    let promptText = `Analyze this image/text. `;
     if (description) promptText += `Description: "${description}". `;
     if (userProfile) promptText += `User Context: Rwandan, ${userProfile.age}y/o, Goals: ${userProfile.goals.join(", ")}. `;
     
     promptText += `
-      1. Identify the main dish (use local Rwandan names if applicable, e.g., Isombe, Ugali, Dodo).
-      2. Estimate Calories and Macros (Protein, Carbs, Fats).
-      3. CRITICAL: Estimate Micronutrients (Iron, Vit A, Zinc, Calcium, Folate, Iodine). If unknown, estimate based on ingredients (e.g., Dodo/Spinach = high Iron/Vit A).
-      4. Provide 3 specific suggestions to improve nutrient density relative to the user's goals (e.g., "Add lemon to greens to absorb iron").
-      5. Provide alerts if the meal is significantly low in key nutrients or high in unhealthy fats/sugar.
-      6. List specific food groups or nutrients MISSING from this meal that make it incomplete (e.g. "Missing vegetables", "No protein source").
-      7. Assess Risk Severity: "High" if the meal is extremely unbalanced or deficient for the user, "Medium" if average, "Low" if healthy.
+      1. CRITICAL: First check if the image/text represents FOOD or a MEAL.
+      2. If it is NOT food (e.g. a selfie, a car, a landscape, generic object), set "isFood" to false, "message" to "This does not look like a meal", and fill other numeric fields with 0.
+      3. If it IS food, set "isFood" to true.
+      4. Identify the main dish (use local Rwandan names if applicable, e.g., Isombe, Ugali, Dodo).
+      5. Estimate Calories and Macros (Protein, Carbs, Fats).
+      6. CRITICAL: Estimate Micronutrients (Iron, Vit A, Zinc, Calcium, Folate, Iodine). If unknown, estimate based on ingredients (e.g., Dodo/Spinach = high Iron/Vit A).
+      7. Provide 3 specific suggestions to improve nutrient density relative to the user's goals (e.g., "Add lemon to greens to absorb iron").
+      8. Provide alerts if the meal is significantly low in key nutrients or high in unhealthy fats/sugar.
+      9. List specific food groups or nutrients MISSING from this meal that make it incomplete (e.g. "Missing vegetables", "No protein source").
+      10. Assess Risk Severity: "High" if the meal is extremely unbalanced or deficient for the user, "Medium" if average, "Low" if healthy.
     `;
 
     parts.push({ text: promptText });
@@ -134,6 +139,8 @@ export const analyzeMeal = async (
         responseSchema: {
           type: Type.OBJECT,
           properties: {
+            isFood: { type: Type.BOOLEAN, description: "True if image is food, False otherwise" },
+            message: { type: Type.STRING, description: "Error message if not food" },
             name: { type: Type.STRING },
             calories: { type: Type.NUMBER },
             protein: { type: Type.NUMBER },
@@ -150,7 +157,7 @@ export const analyzeMeal = async (
             missing: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of missing food groups" },
             riskSeverity: { type: Type.STRING, enum: ["Low", "Medium", "High"] },
           },
-          required: ["name", "calories", "protein", "carbs", "fats", "iron", "vitaminA", "suggestions", "missing", "riskSeverity"],
+          required: ["isFood", "name", "calories", "protein", "carbs", "fats", "iron", "vitaminA", "suggestions", "missing", "riskSeverity"],
         },
       },
     });
@@ -161,6 +168,7 @@ export const analyzeMeal = async (
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
     return {
+      isFood: true, // Fallback to allow manual entry if AI fails
       name: "Unknown Meal",
       calories: 0,
       protein: 0,

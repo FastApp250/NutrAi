@@ -225,6 +225,15 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
     
     updateState({ mode: 'analyzing' });
     const result = await analyzeMeal(image, text, user);
+
+    if (result.isFood === false) {
+      alert(result.message || "This image doesn't look like food. Please try again with a valid meal.");
+      // Go back to input mode (reset analysis, keep image so user can change it)
+      updateState({ analysis: null, mode: 'initial' });
+      setIsEditing(false);
+      return;
+    }
+
     updateState({ analysis: result, mode: 'result' });
     setIsEditing(false);
   };

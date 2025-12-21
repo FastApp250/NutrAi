@@ -69,7 +69,7 @@ const AppContent = () => {
                 {/* Center Action Button */}
                 <button 
                     onClick={() => setCurrentPage('input')}
-                    className="w-14 h-14 bg-black/90 backdrop-blur-md rounded-full shadow-lg shadow-gray-400/50 flex items-center justify-center text-white transition-transform active:scale-95 -mt-8 border-[3px] border-white"
+                    className="w-14 h-14 flex-shrink-0 aspect-square bg-black/90 backdrop-blur-md rounded-full shadow-lg shadow-gray-400/50 flex items-center justify-center text-white transition-transform active:scale-95 -mt-8 border-[3px] border-white"
                 >
                     <Plus size={28} strokeWidth={2.5} />
                 </button>

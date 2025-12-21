@@ -10,7 +10,7 @@ export const Profile = () => {
   if (!user) return null;
 
   return (
-    <div className="p-6 space-y-8 animate-fade-in">
+    <div className="p-6 space-y-8 animate-fade-in pb-24">
       <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
           <button className="p-2 bg-gray-100 rounded-full text-gray-600"><Settings size={20}/></button>
@@ -61,8 +61,27 @@ export const Profile = () => {
       <Button variant="danger" onClick={clearSession} className="bg-red-50 text-red-600 hover:bg-red-100 shadow-none">
           <LogOut size={18} /> Sign Out
       </Button>
+
+      {/* Developer Credits Section */}
+      <div className="mt-6 border-t border-gray-100 pt-6">
+          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">About the Team</h3>
+          <div className="bg-gray-50 rounded-2xl p-5 text-sm text-gray-600 space-y-3 border border-gray-100">
+              <div>
+                  <strong className="block text-gray-900">Nshimyimana Kevin</strong>
+                  <span className="text-xs text-gray-400 font-medium">Fullstack Developer</span>
+              </div>
+              <div className="w-full h-px bg-gray-200/50"></div>
+              <div>
+                  <strong className="block text-gray-900">Colbe Maximilliene</strong>
+              </div>
+              <div className="w-full h-px bg-gray-200/50"></div>
+              <div>
+                  <strong className="block text-gray-900">Hirwa Prince</strong>
+              </div>
+          </div>
+      </div>
       
-      <p className="text-center text-[10px] text-gray-400 font-medium">NitrAi v1.0.3 • Rwanda</p>
+      <p className="text-center text-[10px] text-gray-400 font-medium mt-4">NitrAi v1.0.3 • Rwanda</p>
     </div>
   );
 };
