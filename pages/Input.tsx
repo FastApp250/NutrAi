@@ -199,9 +199,9 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                   folate: 0,
                   iodine: 0,
                   suggestions: ["Check the packaging for exact values", "Processed foods may be high in sodium"],
-                  alerts: [],
-                  missing: [],
-                  riskSeverity: 'Low'
+                  alerts: [] as string[],
+                  missing: [] as string[],
+                  riskSeverity: 'Low' as 'Low' | 'Medium' | 'High'
               };
 
               if (analysisResult.fats > 20) analysisResult.alerts.push("High Fat Content");
