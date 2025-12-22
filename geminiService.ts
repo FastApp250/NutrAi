@@ -4,8 +4,8 @@ import { UserProfile, MealLog, HealthAudit } from "./types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const MODEL_TEXT = 'gemini-2.0-flash';
-const MODEL_VISION = 'gemini-2.0-flash'; 
+const MODEL_TEXT = 'gemini-3-flash-preview';
+const MODEL_VISION = 'gemini-3-flash-preview'; 
 
 export const generateOnboardingProfile = async (
   age: number,

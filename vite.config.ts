@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   
   // Use the environment variable if present, otherwise use the provided key
-  const activeKey = env.API_KEY || "AIzaSyCDegvayuhtCOSGE3E1t-ZBDTrsiS-oMk0";
+  const activeKey = env.API_KEY || "AlzaSyDLsepx_g1fBCHhbg43WiKdlAoZkM5npVY";
 
   return {
     plugins: [react()],
