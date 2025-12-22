@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../AppContext';
-import { generateDailyTip } from '../geminiService';
+import { generateDailyTip, generateNotificationTip } from '../geminiService';
 import { Card, Button, Logo } from '../components/UI';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Plus, Flame, Sparkles, ChevronRight, Utensils, Droplets, Zap, ShieldCheck, Download } from 'lucide-react';
@@ -47,11 +47,64 @@ export const Home = ({ onNavigate }: { onNavigate: (page: string) => void }) => 
     { name: 'Remaining', value: 100 - overallScore, color: '#f3f4f6' }, 
   ];
 
+  // Daily Tip Generation (General)
   useEffect(() => {
     if (user?.goals) {
       generateDailyTip(user.goals).then(setTip);
     }
   }, [user]);
+
+  // Push Notification Logic (Progress-based)
+  useEffect(() => {
+    const triggerNotification = async () => {
+        if (!user) return;
+        
+        // Check if we already notified today
+        const lastNotifDate = localStorage.getItem('nitrai_last_notif_date');
+        const todayStr = new Date().toDateString();
+        
+        if (lastNotifDate === todayStr) {
+            return;
+        }
+
+        // Check Permissions
+        if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+            return;
+        }
+
+        const send = async () => {
+             // Generate custom tip based on actual progress logs
+             const notificationBody = await generateNotificationTip(user, logs);
+             
+             try {
+                new Notification("NitrAi Daily Update", {
+                    body: notificationBody,
+                    icon: "https://cdn-icons-png.flaticon.com/512/4264/4264818.png"
+                });
+                localStorage.setItem('nitrai_last_notif_date', todayStr);
+             } catch (e) {
+                console.error("Notification failed", e);
+             }
+        };
+
+        if (Notification.permission === "granted") {
+            // Wait a few seconds after load so it's not instant
+            setTimeout(send, 3000);
+        } else if (Notification.permission !== "denied") {
+            // Request permission - note: this is best done on button click, 
+            // but for "system will generate", we try here.
+            // Some browsers block this without user interaction.
+            Notification.requestPermission().then((permission) => {
+                if (permission === "granted") {
+                    send();
+                }
+            });
+        }
+    };
+
+    triggerNotification();
+  }, [user, logs]);
 
   if (!user) return null;
 

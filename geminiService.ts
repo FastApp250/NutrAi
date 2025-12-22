@@ -4,8 +4,8 @@ import { UserProfile, MealLog, HealthAudit } from "./types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const MODEL_TEXT = 'gemini-3-flash-preview';
-const MODEL_VISION = 'gemini-3-flash-preview'; 
+const MODEL_TEXT = 'gemini-2.0-flash';
+const MODEL_VISION = 'gemini-2.0-flash'; 
 
 export const generateOnboardingProfile = async (
   age: number,
@@ -84,6 +84,7 @@ export const analyzeMeal = async (
   isFood: boolean;
   message?: string;
   name: string; 
+  ingredients: string[];
   calories: number; 
   protein: number; 
   carbs: number; 
@@ -98,6 +99,7 @@ export const analyzeMeal = async (
   alerts: string[];
   missing: string[];
   riskSeverity: 'Low' | 'Medium' | 'High';
+  confidenceScore: number;
 }> => {
   try {
     const parts: any[] = [];
@@ -118,7 +120,7 @@ export const analyzeMeal = async (
     
     promptText += `
       1. CRITICAL: First check if the image/text represents FOOD or a MEAL.
-      2. If it is NOT food (e.g. a selfie, a car, a landscape, generic object), set "isFood" to false, "message" to "This does not look like a meal", and fill other numeric fields with 0.
+      2. If it is NOT food (e.g. a selfie, a car, a landscape, generic object), set "isFood" to false, "message" to "This does not look like a meal. Please take a photo of food.", and fill other numeric fields with 0.
       3. If it IS food, set "isFood" to true.
       4. Identify the main dish (use local Rwandan names if applicable, e.g., Isombe, Ugali, Dodo).
       5. Estimate Calories and Macros (Protein, Carbs, Fats).
@@ -127,6 +129,8 @@ export const analyzeMeal = async (
       8. Provide alerts if the meal is significantly low in key nutrients or high in unhealthy fats/sugar.
       9. List specific food groups or nutrients MISSING from this meal that make it incomplete (e.g. "Missing vegetables", "No protein source").
       10. Assess Risk Severity: "High" if the meal is extremely unbalanced or deficient for the user, "Medium" if average, "Low" if healthy.
+      11. Identify key ingredients visible or inferred (max 5).
+      12. Provide a confidence score (0-100) on how certain you are about the food identification.
     `;
 
     parts.push({ text: promptText });
@@ -142,6 +146,7 @@ export const analyzeMeal = async (
             isFood: { type: Type.BOOLEAN, description: "True if image is food, False otherwise" },
             message: { type: Type.STRING, description: "Error message if not food" },
             name: { type: Type.STRING },
+            ingredients: { type: Type.ARRAY, items: { type: Type.STRING } },
             calories: { type: Type.NUMBER },
             protein: { type: Type.NUMBER },
             carbs: { type: Type.NUMBER },
@@ -156,8 +161,9 @@ export const analyzeMeal = async (
             alerts: { type: Type.ARRAY, items: { type: Type.STRING } },
             missing: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of missing food groups" },
             riskSeverity: { type: Type.STRING, enum: ["Low", "Medium", "High"] },
+            confidenceScore: { type: Type.NUMBER, description: "0-100 confidence level" },
           },
-          required: ["isFood", "name", "calories", "protein", "carbs", "fats", "iron", "vitaminA", "suggestions", "missing", "riskSeverity"],
+          required: ["isFood", "name", "ingredients", "calories", "protein", "carbs", "fats", "iron", "vitaminA", "suggestions", "missing", "riskSeverity", "confidenceScore"],
         },
       },
     });
@@ -170,6 +176,7 @@ export const analyzeMeal = async (
     return {
       isFood: true, // Fallback to allow manual entry if AI fails
       name: "Unknown Meal",
+      ingredients: [],
       calories: 0,
       protein: 0,
       carbs: 0,
@@ -183,7 +190,8 @@ export const analyzeMeal = async (
       suggestions: ["Could not analyze meal. Please try again."],
       alerts: [],
       missing: [],
-      riskSeverity: 'Low'
+      riskSeverity: 'Low',
+      confidenceScore: 0
     };
   }
 };
@@ -198,6 +206,35 @@ export const generateDailyTip = async (goals: string[]): Promise<string> => {
   } catch (e) {
     return "Add lemon to your greens to help absorb more Iron.";
   }
+};
+
+export const generateNotificationTip = async (user: UserProfile, logs: MealLog[]): Promise<string> => {
+    try {
+        const todayLogs = logs.filter(log => {
+            const d = new Date(log.timestamp);
+            const t = new Date();
+            return d.getDate() === t.getDate() && d.getMonth() === t.getMonth();
+        });
+
+        const consumedIron = todayLogs.reduce((acc, l) => acc + (l.micros?.iron || 0), 0);
+        const consumedVitA = todayLogs.reduce((acc, l) => acc + (l.micros?.vitaminA || 0), 0);
+
+        const prompt = `
+            User Profile: ${user.name}, Goals: ${user.goals.join(', ')}.
+            Progress Today: Iron ${consumedIron.toFixed(1)}/${user.dailyMicros.iron}mg, Vit A ${consumedVitA.toFixed(0)}/${user.dailyMicros.vitaminA}mcg.
+            
+            Task: Write a very short (max 12 words) notification message encouraging the user based on their progress today. 
+            If they are low on Iron, mention it. If they are doing well, congratulate them.
+        `;
+
+        const response = await ai.models.generateContent({
+            model: MODEL_TEXT,
+            contents: prompt,
+        });
+        return response.text || "Keep tracking your meals to stay healthy!";
+    } catch (e) {
+        return "Don't forget to log your dinner today!";
+    }
 };
 
 export const generateMealPlan = async (user: UserProfile): Promise<any> => {

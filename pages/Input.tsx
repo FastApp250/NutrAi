@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { analyzeMeal } from '../geminiService';
 import { Button } from '../components/UI';
-import { Camera, Type, Loader2, Check, AlertCircle, X, Image as ImageIcon, Droplets, Zap, ShieldCheck, ScanBarcode, ZapOff, Trash2, AlertTriangle, Info, Edit3, PlusCircle } from 'lucide-react';
+import { Camera, Type, Loader2, Check, AlertCircle, X, Image as ImageIcon, Droplets, Zap, ShieldCheck, ScanBarcode, ZapOff, Trash2, AlertTriangle, Info, Edit3, PlusCircle, RefreshCw } from 'lucide-react';
 import { DraftMeal } from '../types';
 import { Html5Qrcode } from 'html5-qrcode';
 
@@ -17,7 +17,8 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
   const [analysis, setAnalysisState] = useState<any>(draftMeal?.analysis || null);
   const [showHint, setShowHint] = useState(false);
   const [flashOn, setFlashOn] = useState(false);
-  const [isEditing, setIsEditing] = useState(false); // State for "Add Details" mode
+  const [isEditing, setIsEditing] = useState(false); // State for manual override
+  const [errorModal, setErrorModal] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,6 +47,12 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
         text: newText,
         analysis: newAnalysis
     });
+  };
+
+  const updateAnalysis = (updates: any) => {
+      const newAnalysis = { ...analysis, ...updates };
+      setAnalysisState(newAnalysis);
+      setDraftMeal({ mode, image, text, analysis: newAnalysis });
   };
 
   const stopCamera = () => {
@@ -187,7 +194,9 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
               const n = p.nutriments || {};
               
               const analysisResult = {
+                  isFood: true,
                   name: p.product_name || "Packaged Food",
+                  ingredients: p.ingredients_text ? p.ingredients_text.split(',').map((i: string) => i.trim()) : [],
                   calories: Math.round(n['energy-kcal_serving'] || n['energy-kcal_100g'] || 0),
                   protein: Math.round(n['proteins_serving'] || n['proteins_100g'] || 0),
                   carbs: Math.round(n['carbohydrates_serving'] || n['carbohydrates_100g'] || 0),
@@ -201,7 +210,8 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                   suggestions: ["Check the packaging for exact values", "Processed foods may be high in sodium"],
                   alerts: [] as string[],
                   missing: [] as string[],
-                  riskSeverity: 'Low' as 'Low' | 'Medium' | 'High'
+                  riskSeverity: 'Low' as 'Low' | 'Medium' | 'High',
+                  confidenceScore: 100
               };
 
               if (analysisResult.fats > 20) analysisResult.alerts.push("High Fat Content");
@@ -226,9 +236,10 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
     updateState({ mode: 'analyzing' });
     const result = await analyzeMeal(image, text, user);
 
+    // AI Determined it is NOT food
     if (result.isFood === false) {
-      alert(result.message || "This image doesn't look like food. Please try again with a valid meal.");
-      // Go back to input mode (reset analysis, keep image so user can change it)
+      setErrorModal(result.message || "This doesn't look like a valid food item. Please try capturing the meal again.");
+      // Keep mode as is or switch to initial but keep image so they can see what was wrong
       updateState({ analysis: null, mode: 'initial' });
       setIsEditing(false);
       return;
@@ -259,6 +270,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
           iodine: analysis.iodine || 0
         },
         image: image || undefined,
+        ingredients: analysis.ingredients || [],
         suggestions: analysis.suggestions,
         alerts: analysis.alerts,
         missing: analysis.missing,
@@ -272,6 +284,10 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
   const handleDiscard = () => {
       updateState({ analysis: null, mode: 'initial' });
   };
+  
+  const handleRescan = () => {
+      startCamera();
+  };
 
   const handleClose = () => {
       setDraftMeal(null);
@@ -280,8 +296,6 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
 
   const handleEditDetails = () => {
       setIsEditing(true);
-      // We go back to 'analyzing' state visually but allow editing
-      // Actually simpler to just show the text area again
   };
 
   if (mode === 'camera') {
@@ -398,7 +412,23 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col relative">
+      {/* Error Modal */}
+      {errorModal && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-fade-in">
+           <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center transform transition-all scale-100">
+               <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
+                   <AlertTriangle size={32} />
+               </div>
+               <h3 className="text-xl font-bold text-gray-900 mb-2">Not recognized as food</h3>
+               <p className="text-gray-600 mb-6 text-sm leading-relaxed">{errorModal}</p>
+               <Button onClick={() => setErrorModal(null)}>
+                   Try Again
+               </Button>
+           </div>
+        </div>
+      )}
+
       <div className="p-6 flex items-center justify-between">
         <button onClick={handleClose} className="p-2 -ml-2 rounded-full hover:bg-gray-100"><X className="text-gray-900" /></button>
         <h2 className="text-lg font-bold">{analysis ? 'Review Entry' : 'New Entry'}</h2>
@@ -478,7 +508,20 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
         {analysis && !isEditing && (
             <div className="animate-fade-in space-y-6 pb-24">
                 
-                 {/* High Risk Warning Banner - GOAL 2: Clear warning with actionable advice */}
+                {/* Confidence Warning */}
+                {analysis.confidenceScore !== undefined && analysis.confidenceScore < 70 && (
+                   <div className="bg-yellow-50 border border-yellow-200 rounded-3xl p-4 flex gap-3 items-start">
+                      <AlertCircle className="text-yellow-600 flex-shrink-0 mt-0.5" size={20} />
+                      <div>
+                        <h4 className="font-bold text-yellow-800 text-sm">Low Confidence ({analysis.confidenceScore}%)</h4>
+                        <p className="text-xs text-yellow-700 font-medium mt-1">
+                          The AI isn't fully sure about this meal. Please verify the name and ingredients below.
+                        </p>
+                      </div>
+                   </div>
+                )}
+
+                 {/* High Risk Warning Banner */}
                 {(analysis.riskSeverity === 'High' || analysis.riskSeverity === 'Medium') && (
                     <div className={`p-5 rounded-3xl shadow-lg ${analysis.riskSeverity === 'High' ? 'bg-red-600 text-white shadow-red-200' : 'bg-orange-500 text-white shadow-orange-200'}`}>
                          <div className="flex items-start gap-3">
@@ -502,7 +545,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                 )}
 
                 <div className="flex gap-4 items-start">
-                    <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex-shrink-0">
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex-shrink-0 relative group">
                         {image ? (
                             <img src={image} alt={analysis.name} className="w-full h-full object-cover" />
                         ) : (
@@ -511,13 +554,34 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                             </div>
                         )}
                     </div>
-                    <div>
-                        <h3 className="text-xl font-bold text-gray-900 leading-tight mb-1">{analysis.name}</h3>
-                        <div className="text-3xl font-extrabold text-gray-900">{analysis.calories} <span className="text-sm font-medium text-gray-400">kcal</span></div>
+                    <div className="flex-1">
+                        {/* Editable Name Field */}
+                        <div className="relative group">
+                          <input
+                            type="text"
+                            value={analysis.name}
+                            onChange={(e) => updateAnalysis({ name: e.target.value })}
+                            className="text-xl font-bold text-gray-900 leading-tight mb-1 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-black focus:outline-none w-full transition-colors"
+                          />
+                          <Edit3 size={14} className="absolute right-0 top-1 text-gray-300 pointer-events-none group-hover:text-gray-500" />
+                        </div>
+                        <div className="text-3xl font-extrabold text-gray-900 mt-1">{analysis.calories} <span className="text-sm font-medium text-gray-400">kcal</span></div>
                     </div>
                 </div>
+                
+                {/* Ingredients Editor */}
+                <div className="bg-white border border-gray-100 rounded-3xl p-5">
+                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Ingredients</h4>
+                    <textarea 
+                        className="w-full text-sm font-medium text-gray-700 bg-gray-50 rounded-xl p-3 focus:ring-2 focus:ring-black/5 outline-none resize-none min-h-[80px]"
+                        value={analysis.ingredients ? analysis.ingredients.join(', ') : ''}
+                        onChange={(e) => updateAnalysis({ ingredients: e.target.value.split(',').map((s: string) => s.trim()) })}
+                        placeholder="List ingredients separated by commas..."
+                    />
+                    <p className="text-[10px] text-gray-400 mt-2 text-right">Edit if needed</p>
+                </div>
 
-                {/* GOAL 1: Dedicated Section for Macros */}
+                {/* Macros Section */}
                 <div>
                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Macronutrients</h4>
                     <div className="grid grid-cols-3 gap-3">
@@ -534,7 +598,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                     </div>
                 </div>
 
-                {/* GOAL 1: Dedicated Section for Micros */}
+                {/* Micros Section */}
                 <div>
                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Micronutrients</h4>
                     <div className="grid grid-cols-3 gap-3">
@@ -556,7 +620,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                     </div>
                 </div>
 
-                {/* Missing Ingredients / Add Details Section */}
+                {/* Missing Ingredients */}
                 {analysis.missing && analysis.missing.length > 0 && (
                     <div className="bg-gray-50 border border-gray-100 p-5 rounded-3xl">
                         <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
@@ -570,10 +634,6 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                                 </li>
                             ))}
                         </ul>
-                         {/* GOAL 1: Add Details Button */}
-                        <Button variant="outline" onClick={handleEditDetails} className="w-full text-xs h-auto py-2 bg-white border-gray-200">
-                            <PlusCircle size={14} /> Add Details if AI missed something
-                        </Button>
                     </div>
                 )}
                 
@@ -602,7 +662,11 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
             <div className="pb-safe p-6 bg-white/90 backdrop-blur-md sticky bottom-0 border-t border-gray-100">
                 {analysis ? (
                     <div className="flex gap-3">
-                        <Button variant="outline" className="bg-white flex-1" onClick={handleDiscard}>Discard</Button>
+                         {/* Rescan Button for Corrections */}
+                         <Button variant="outline" className="w-14 px-0 flex-shrink-0 border-gray-200" onClick={handleRescan}>
+                            <RefreshCw size={20} />
+                         </Button>
+                        <Button variant="outline" className="bg-white flex-1 border-gray-200" onClick={handleDiscard}>Discard</Button>
                         <Button className="flex-[2]" onClick={handleSave}>Log Meal</Button>
                     </div>
                 ) : (

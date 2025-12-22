@@ -137,118 +137,126 @@ export const Onboarding = () => {
     switch (step) {
       case 1:
         return (
-          <div className="flex flex-col h-full justify-center space-y-8 animate-fade-in p-2">
-            <div className="space-y-4">
-                <div className="mb-6">
-                    <Logo size="large" />
+          <div className="flex flex-col h-full animate-fade-in relative">
+            <div className="flex-1 overflow-y-auto no-scrollbar p-2">
+                <div className="space-y-4">
+                    <div className="mb-6">
+                        <Logo size="large" />
+                    </div>
+                    <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.welcomeTitle}</h2>
+                    <p className="text-gray-800 font-medium opacity-80 leading-relaxed">{t.welcomeSubtitle}</p>
                 </div>
-                <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.welcomeTitle}</h2>
-                <p className="text-gray-800 font-medium opacity-80">{t.welcomeSubtitle}</p>
-            </div>
-            
-            <InputField
-              label={t.firstName}
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g. Keza"
-            />
-            
-             <div className="space-y-3">
-              <label className="block text-sm font-semibold text-gray-900 ml-1">{t.language}</label>
-              <div className="grid grid-cols-3 gap-3">
-                {['English', 'Kinyarwanda', 'French'].map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => setFormData({ ...formData, language: lang as any })}
-                    className={`p-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-md ${
-                      formData.language === lang
-                        ? 'bg-black text-white shadow-lg shadow-black/10'
-                        : 'bg-white/40 text-gray-800 hover:bg-white/60 border border-white/20'
-                    }`}
-                  >
-                    {lang}
-                  </button>
-                ))}
-              </div>
+                
+                <div className="mt-8">
+                    <InputField
+                    label={t.firstName}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="e.g. Keza"
+                    />
+                </div>
+                
+                <div className="space-y-3 mt-4">
+                  <label className="block text-sm font-semibold text-gray-900 ml-1">{t.language}</label>
+                  <div className="grid grid-cols-3 gap-3">
+                      {['English', 'Kinyarwanda', 'French'].map((lang) => (
+                      <button
+                          key={lang}
+                          onClick={() => setFormData({ ...formData, language: lang as any })}
+                          className={`p-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-md border ${
+                          formData.language === lang
+                              ? 'bg-black/80 text-white shadow-lg shadow-black/10 border-white/20'
+                              : 'bg-white/40 text-gray-800 hover:bg-white/60 border-white/30'
+                          }`}
+                      >
+                          {lang}
+                      </button>
+                      ))}
+                  </div>
+                </div>
             </div>
 
-            {/* Persistent Install Card */}
-            <div className="fixed bottom-24 left-6 right-6 z-50 bg-white/80 backdrop-blur-xl border border-white/50 p-4 rounded-3xl flex items-center justify-between shadow-2xl animate-bounce-slow">
-                <div>
-                    <p className="text-indigo-900 font-bold text-sm">Get the App</p>
-                    <p className="text-indigo-800 text-xs opacity-80">Install for offline use</p>
+            {/* Sticky Footer */}
+            <div className="mt-auto pt-4 flex flex-col gap-4 z-20">
+                {/* Install Card */}
+                <div className="bg-white/60 backdrop-blur-xl border border-white/50 p-4 rounded-3xl flex items-center justify-between shadow-lg">
+                    <div>
+                        <p className="text-indigo-900 font-bold text-sm">Get the App</p>
+                        <p className="text-indigo-800 text-xs opacity-80">Install for offline use</p>
+                    </div>
+                    {installPrompt ? (
+                        <button onClick={installApp} className="bg-indigo-600/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/30 active:scale-95 transition-transform">
+                            <Download size={14}/> {t.install}
+                        </button>
+                    ) : (
+                        <button disabled className="bg-green-50 text-green-700 border border-green-100 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 opacity-80">
+                            <Check size={14}/> Installed
+                        </button>
+                    )}
                 </div>
-                {installPrompt ? (
-                    <button onClick={installApp} className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/30 active:scale-95 transition-transform">
-                        <Download size={14}/> {t.install}
-                    </button>
-                ) : (
-                    <button disabled className="bg-green-50 text-green-700 border border-green-100 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 opacity-80">
-                        <Check size={14}/> Installed
-                    </button>
-                )}
-            </div>
 
-            <div className="pt-8">
                 <Button onClick={handleNext} disabled={!formData.name}>{t.continue} <ArrowRight size={18}/></Button>
             </div>
           </div>
         );
       case 2:
         return (
-          <div className="flex flex-col h-full justify-center space-y-8 animate-fade-in p-2">
-             <div className="space-y-2">
-                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-xl shadow-black/10">
-                    <Ruler size={24} />
-                </div>
-                <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.bodyStats}</h2>
-                <p className="text-gray-800 font-medium opacity-80">{t.bodyStatsSubtitle}</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-5">
-              <InputField
-                label={t.age}
-                type="number"
-                value={formData.age}
-                onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
-              />
-               <div className="col-span-1">
-                <label className="block text-sm font-semibold text-gray-900 mb-2 ml-1">{t.gender}</label>
-                <div className="relative">
-                    <select
-                        value={formData.gender}
-                        onChange={(e) => setFormData({...formData, gender: e.target.value as UserProfile['gender']})}
-                        className="w-full px-5 py-4 rounded-2xl bg-white/50 backdrop-blur-sm border-0 text-gray-900 font-medium appearance-none outline-none focus:ring-2 focus:ring-black/5"
-                    >
-                        {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                        <ArrowRight size={16} className="rotate-90" />
+          <div className="flex flex-col h-full animate-fade-in relative">
+            <div className="flex-1 overflow-y-auto no-scrollbar p-2">
+                 <div className="space-y-2 mb-8">
+                    <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-xl shadow-black/10">
+                        <Ruler size={24} />
                     </div>
+                    <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.bodyStats}</h2>
+                    <p className="text-gray-800 font-medium opacity-80">{t.bodyStatsSubtitle}</p>
                 </div>
-               </div>
+
+                <div className="grid grid-cols-2 gap-5 mb-5">
+                  <InputField
+                    label={t.age}
+                    type="number"
+                    value={formData.age}
+                    onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
+                  />
+                   <div className="col-span-1">
+                    <label className="block text-sm font-semibold text-gray-900 mb-2 ml-1">{t.gender}</label>
+                    <div className="relative">
+                        <select
+                            value={formData.gender}
+                            onChange={(e) => setFormData({...formData, gender: e.target.value as UserProfile['gender']})}
+                            className="w-full px-5 py-4 rounded-2xl bg-white/50 backdrop-blur-md border border-gray-100 text-gray-900 font-medium appearance-none outline-none focus:ring-2 focus:ring-black/10 shadow-sm"
+                        >
+                            {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                            <ArrowRight size={16} className="rotate-90" />
+                        </div>
+                    </div>
+                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-5">
+                     <InputField
+                    label={t.weight}
+                    type="number"
+                    value={formData.weight}
+                    onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
+                  />
+                  <InputField
+                    label={t.height}
+                    type="number"
+                    value={formData.height}
+                    onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
+                  />
+                </div>
             </div>
-            <div className="grid grid-cols-2 gap-5">
-                 <InputField
-                label={t.weight}
-                type="number"
-                value={formData.weight}
-                onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
-              />
-              <InputField
-                label={t.height}
-                type="number"
-                value={formData.height}
-                onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
-              />
-            </div>
-            <div className="flex gap-4 pt-8">
-                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/20 hover:bg-white/40"><ArrowLeft size={20}/></Button>
+            
+            <div className="mt-auto pt-4 flex gap-4 z-20">
+                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/30 hover:bg-white/50 backdrop-blur-md"><ArrowLeft size={20}/></Button>
                 <Button onClick={handleNext}>{t.continue} <ArrowRight size={18}/></Button>
             </div>
           </div>
         );
-      case 3: // Goals - Mobile Scrolling Fix & Glass UI
+      case 3: // Goals
         return (
           <div className="animate-fade-in flex flex-col h-full overflow-hidden">
              {/* Fixed Header */}
@@ -260,7 +268,7 @@ export const Onboarding = () => {
                 <p className="text-gray-800 font-medium opacity-80">{t.goalsSubtitle}</p>
             </div>
 
-            {/* Scrollable Middle Content - Flex-1 ensures it fills space between header and footer */}
+            {/* Scrollable Middle Content */}
             <div className="flex-1 overflow-y-auto no-scrollbar min-h-0 px-2 pb-6">
                 <div className="grid grid-cols-2 gap-3">
                   {GOAL_OPTIONS.map((goal) => {
@@ -272,8 +280,8 @@ export const Onboarding = () => {
                           onClick={() => toggleGoal(goal.label)}
                           className={`p-4 rounded-3xl border text-left transition-all duration-300 flex flex-col justify-between h-36 relative overflow-hidden group ${
                             isSelected
-                              ? 'border-black/50 bg-black text-white shadow-xl shadow-black/20 scale-[1.02]'
-                              : 'border-white/10 bg-white/40 backdrop-blur-xl text-gray-800 hover:bg-white/60 shadow-lg shadow-emerald-900/5'
+                              ? 'border-white/20 bg-black/80 backdrop-blur-xl text-white shadow-xl shadow-black/20 scale-[1.02]'
+                              : 'border-white/30 bg-white/40 backdrop-blur-xl text-gray-800 hover:bg-white/60 shadow-lg shadow-emerald-900/5'
                           }`}
                         >
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${isSelected ? 'bg-white/20' : 'bg-white/60 backdrop-blur-sm shadow-sm'}`}>
@@ -292,9 +300,9 @@ export const Onboarding = () => {
                 </div>
             </div>
 
-             {/* Fixed Footer ("Fixed on sky") */}
-             <div className="flex gap-4 pt-4 pb-0 flex-shrink-0 z-20 px-2 bg-gradient-to-t from-lime-300/20 to-transparent">
-                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/20 hover:bg-white/40 backdrop-blur-md"><ArrowLeft size={20}/></Button>
+             {/* Fixed Footer */}
+             <div className="flex gap-4 pt-4 pb-0 flex-shrink-0 z-20 px-2">
+                <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/30 hover:bg-white/50 backdrop-blur-md"><ArrowLeft size={20}/></Button>
                 <Button onClick={handleFinish} disabled={loading || formData.goals.length === 0} className="shadow-xl shadow-black/10">
                     {loading ? <Loader2 className="w-5 h-5 animate-spin"/> : t.createPlan}
                 </Button>

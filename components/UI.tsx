@@ -45,15 +45,24 @@ export const Button = ({
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
 }) => {
-  // Cal AI style: Rounded-full, cleaner transitions
-  const baseStyles = "w-full py-3.5 px-6 rounded-full font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2";
+  // Cal AI / Liquid Glass Style: Rounded-full, backdrop blur, transparency, borders
+  const baseStyles = "w-full py-4 px-6 rounded-full font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 backdrop-blur-xl border shadow-lg";
   
   const variants = {
-    primary: "bg-black text-white hover:bg-gray-900 shadow-lg shadow-gray-200/50",
-    secondary: "bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-200/50",
-    outline: "border border-gray-200 text-gray-900 hover:border-gray-400 bg-transparent",
-    ghost: "bg-transparent text-gray-600 hover:bg-gray-50",
-    danger: "bg-red-50 text-red-600 hover:bg-red-100"
+    // Black with glass effect
+    primary: "bg-black/80 border-white/20 text-white hover:bg-black/90 shadow-black/10",
+    
+    // Green with glass effect
+    secondary: "bg-green-600/80 border-white/20 text-white hover:bg-green-600/90 shadow-green-600/20",
+    
+    // Outline glass
+    outline: "bg-white/30 border-gray-200 text-gray-900 hover:bg-white/50 hover:border-gray-400",
+    
+    // Ghost (minimal glass on hover)
+    ghost: "bg-transparent border-transparent text-gray-600 hover:bg-gray-100/50 shadow-none",
+    
+    // Danger glass
+    danger: "bg-red-50/80 border-red-100 text-red-600 hover:bg-red-100/80"
   };
 
   return (
@@ -104,7 +113,7 @@ export const InputField = ({
       placeholder={placeholder}
       min={min}
       max={max}
-      className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-0 text-gray-900 font-medium placeholder-gray-400 focus:ring-2 focus:ring-black/5 outline-none transition-all"
+      className="w-full px-5 py-4 rounded-2xl bg-white/50 backdrop-blur-md border border-gray-100 text-gray-900 font-medium placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:bg-white/80 outline-none transition-all shadow-sm"
     />
   </div>
 );

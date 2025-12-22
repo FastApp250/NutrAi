@@ -37,6 +37,7 @@ export interface MealLog {
   micros: Micros;
   image?: string; // base64
   notes?: string;
+  ingredients?: string[]; // New: List of ingredients
   suggestions?: string[];
   alerts?: string[]; // Malnutrition risk alerts
   missing?: string[]; // New: List of missing food groups/nutrients
