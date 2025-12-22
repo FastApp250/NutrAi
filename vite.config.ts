@@ -4,11 +4,15 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  
+  // Use the environment variable if present, otherwise use the provided key
+  const activeKey = env.API_KEY || "AIzaSyCDegvayuhtCOSGE3E1t-ZBDTrsiS-oMk0";
+
   return {
     plugins: [react()],
     define: {
-      // This allows the app to access process.env.API_KEY at build time
-      'process.env.API_KEY': JSON.stringify(env.API_KEY)
+      // This injects the key into the code at build time, making it work on Netlify/Vercel
+      'process.env.API_KEY': JSON.stringify(activeKey)
     },
     build: {
       rollupOptions: {
