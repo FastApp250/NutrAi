@@ -39,7 +39,7 @@ export const Plans = ({ onBack }: { onBack: () => void }) => {
         </div>
       ) : (
         <div className="space-y-6">
-            <div className="bg-gradient-to-br from-green-500 to-emerald-700 rounded-3xl p-6 text-white">
+            <div className="bg-gradient-to-br from-green-500 to-emerald-700 rounded-3xl p-6 text-white shadow-lg shadow-green-200">
                 <div className="flex items-start justify-between mb-4">
                     <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide">Today</span>
                     <Sparkles className="text-yellow-300 opacity-80" />

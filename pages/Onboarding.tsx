@@ -165,7 +165,7 @@ export const Onboarding = () => {
                           onClick={() => setFormData({ ...formData, language: lang as any })}
                           className={`p-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-md border ${
                           formData.language === lang
-                              ? 'bg-black/80 text-white border-white/20'
+                              ? 'bg-black/80 text-white shadow-lg shadow-black/10 border-white/20'
                               : 'bg-white/40 text-gray-800 hover:bg-white/60 border-white/30'
                           }`}
                       >
@@ -179,13 +179,13 @@ export const Onboarding = () => {
             {/* Sticky Footer */}
             <div className="mt-auto pt-4 flex flex-col gap-4 z-20">
                 {/* Install Card */}
-                <div className="bg-white/60 backdrop-blur-xl border border-white/50 p-4 rounded-3xl flex items-center justify-between">
+                <div className="bg-white/60 backdrop-blur-xl border border-white/50 p-4 rounded-3xl flex items-center justify-between shadow-lg">
                     <div>
                         <p className="text-indigo-900 font-bold text-sm">Get the App</p>
                         <p className="text-indigo-800 text-xs opacity-80">Install for offline use</p>
                     </div>
                     {installPrompt ? (
-                        <button onClick={installApp} className="bg-indigo-600/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 active:scale-95 transition-transform">
+                        <button onClick={installApp} className="bg-indigo-600/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/30 active:scale-95 transition-transform">
                             <Download size={14}/> {t.install}
                         </button>
                     ) : (
@@ -204,7 +204,7 @@ export const Onboarding = () => {
           <div className="flex flex-col h-full animate-fade-in relative">
             <div className="flex-1 overflow-y-auto no-scrollbar p-2">
                  <div className="space-y-2 mb-8">
-                    <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4">
+                    <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-xl shadow-black/10">
                         <Ruler size={24} />
                     </div>
                     <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.bodyStats}</h2>
@@ -261,7 +261,7 @@ export const Onboarding = () => {
           <div className="animate-fade-in flex flex-col h-full overflow-hidden">
              {/* Fixed Header */}
              <div className="space-y-2 flex-shrink-0 mb-4 pt-2 px-2">
-                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4">
+                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white mb-4 shadow-xl shadow-black/10">
                     <Target size={24} />
                 </div>
                 <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t.yourGoals}</h2>
@@ -280,11 +280,11 @@ export const Onboarding = () => {
                           onClick={() => toggleGoal(goal.label)}
                           className={`p-4 rounded-3xl border text-left transition-all duration-300 flex flex-col justify-between h-36 relative overflow-hidden group ${
                             isSelected
-                              ? 'border-white/20 bg-black/80 backdrop-blur-xl text-white scale-[1.02]'
-                              : 'border-white/30 bg-white/40 backdrop-blur-xl text-gray-800 hover:bg-white/60'
+                              ? 'border-white/20 bg-black/80 backdrop-blur-xl text-white shadow-xl shadow-black/20 scale-[1.02]'
+                              : 'border-white/30 bg-white/40 backdrop-blur-xl text-gray-800 hover:bg-white/60 shadow-lg shadow-emerald-900/5'
                           }`}
                         >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${isSelected ? 'bg-white/20' : 'bg-white/60 backdrop-blur-sm'}`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${isSelected ? 'bg-white/20' : 'bg-white/60 backdrop-blur-sm shadow-sm'}`}>
                                 <Icon size={20} className={isSelected ? 'text-white' : 'text-gray-900'} />
                             </div>
                             <span className={`font-bold text-sm leading-tight pr-2 ${isSelected ? 'text-white' : 'text-gray-900'}`}>{goal.label}</span>
@@ -303,7 +303,7 @@ export const Onboarding = () => {
              {/* Fixed Footer */}
              <div className="flex gap-4 pt-4 pb-0 flex-shrink-0 z-20 px-2">
                 <Button variant="ghost" onClick={handleBack} className="w-auto px-0 bg-white/30 hover:bg-white/50 backdrop-blur-md"><ArrowLeft size={20}/></Button>
-                <Button onClick={handleFinish} disabled={loading || formData.goals.length === 0}>
+                <Button onClick={handleFinish} disabled={loading || formData.goals.length === 0} className="shadow-xl shadow-black/10">
                     {loading ? <Loader2 className="w-5 h-5 animate-spin"/> : t.createPlan}
                 </Button>
             </div>

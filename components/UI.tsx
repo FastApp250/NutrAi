@@ -46,20 +46,20 @@ export const Button = ({
   type?: 'button' | 'submit' | 'reset';
 }) => {
   // Cal AI / Liquid Glass Style: Rounded-full, backdrop blur, transparency, borders
-  const baseStyles = "w-full py-4 px-6 rounded-full font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 backdrop-blur-xl border";
+  const baseStyles = "w-full py-4 px-6 rounded-full font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 backdrop-blur-xl border shadow-lg";
   
   const variants = {
     // Black with glass effect
-    primary: "bg-black/80 border-white/20 text-white hover:bg-black/90",
+    primary: "bg-black/80 border-white/20 text-white hover:bg-black/90 shadow-black/10",
     
     // Green with glass effect
-    secondary: "bg-green-600/80 border-white/20 text-white hover:bg-green-600/90",
+    secondary: "bg-green-600/80 border-white/20 text-white hover:bg-green-600/90 shadow-green-600/20",
     
     // Outline glass
     outline: "bg-white/30 border-gray-200 text-gray-900 hover:bg-white/50 hover:border-gray-400",
     
     // Ghost (minimal glass on hover)
-    ghost: "bg-transparent border-transparent text-gray-600 hover:bg-gray-100/50",
+    ghost: "bg-transparent border-transparent text-gray-600 hover:bg-gray-100/50 shadow-none",
     
     // Danger glass
     danger: "bg-red-50/80 border-red-100 text-red-600 hover:bg-red-100/80"
@@ -121,11 +121,24 @@ export const InputField = ({
 export const NavItem = ({ Icon, label, active, onClick }: { Icon: LucideIcon; label: string; active: boolean; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className={`flex flex-col items-center justify-center gap-1 py-2 transition-all duration-200 ${
-      active ? 'text-black' : 'text-gray-400'
+    className={`flex flex-col items-center justify-center space-y-1.5 w-full py-1 transition-all duration-300 ${
+      active ? 'text-black scale-105' : 'text-gray-400 hover:text-gray-600'
     }`}
   >
-    <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-    <span className={`text-[11px] font-medium ${active ? 'font-semibold' : ''}`}>{label}</span>
+    <Icon size={24} strokeWidth={active ? 2.5 : 2} className={active ? "fill-black/5" : ""} />
+  </button>
+);
+
+export const SidebarItem = ({ Icon, label, active, onClick }: { Icon: LucideIcon; label: string; active: boolean; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-4 w-full px-4 py-3 rounded-xl transition-all duration-200 ${
+      active 
+        ? 'bg-black text-white shadow-lg shadow-black/10' 
+        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+    }`}
+  >
+    <Icon size={20} strokeWidth={active ? 2.5 : 2} />
+    <span className="font-bold text-sm">{label}</span>
   </button>
 );

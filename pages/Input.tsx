@@ -344,7 +344,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                 </div>
                 
                 {/* Bottom Controls */}
-                <div className="flex justify-between pb-8 pointer-events-auto items-center px-4">
+                <div className="flex justify-between pb-8 pointer-events-auto items-center px-4 md:justify-center md:gap-8">
                      <button onClick={() => fileInputRef.current?.click()} className="p-4 bg-black/30 backdrop-blur-md rounded-full text-white hover:bg-black/50 transition-colors border border-white/10 active:scale-95 shadow-lg">
                         <ImageIcon size={24} />
                      </button>
@@ -363,7 +363,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                      </button>
                      
                      {/* Spacer to balance layout (aligns shutter to center) */}
-                     <div className="w-[58px]"></div>
+                     <div className="w-[58px] md:hidden"></div>
                 </div>
              </div>
         </div>
@@ -412,7 +412,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col relative">
+    <div className="min-h-screen bg-white flex flex-col relative md:rounded-[40px] md:shadow-lg md:border md:border-gray-100 overflow-hidden">
       {/* Error Modal */}
       {errorModal && (
         <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-fade-in">
@@ -431,31 +431,35 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
         </div>
       )}
 
-      <div className="p-6 flex items-center justify-between">
-        <button onClick={handleClose} className="p-2 -ml-2 rounded-full hover:bg-gray-100"><X className="text-gray-900" /></button>
+      <div className="p-6 md:px-8 flex items-center justify-between border-b border-gray-100">
+        <button onClick={handleClose} className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"><X className="text-gray-900" /></button>
         <h2 className="text-lg font-bold">{analysis ? 'Review Entry' : 'New Entry'}</h2>
         <div className="w-10"></div>
       </div>
 
-      <div className="flex-1 flex flex-col px-6 overflow-y-auto no-scrollbar">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-6">{analysis ? 'Meal Breakdown' : 'What did you eat?'}</h1>
+      <div className="flex-1 flex flex-col px-6 md:px-8 overflow-y-auto no-scrollbar py-6">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-8">{analysis ? 'Meal Breakdown' : 'What did you eat?'}</h1>
 
         {(!analysis || isEditing) && (
-            <div className={`transition-all ${isEditing ? 'pb-2' : ''}`}>
+            <div className={`transition-all max-w-2xl mx-auto w-full ${isEditing ? 'pb-24' : ''}`}>
                 {/* 1. Camera Control Row */}
-                <div className="grid grid-cols-2 gap-3 mb-6 flex-shrink-0">
+                <div className="grid grid-cols-2 gap-4 mb-8 flex-shrink-0">
                     <button 
                         onClick={startCamera}
-                        className="flex flex-col items-center justify-center gap-2 h-32 rounded-3xl bg-black text-white hover:bg-gray-900 active:scale-[0.98] transition-all shadow-lg shadow-gray-200"
+                        className="flex flex-col items-center justify-center gap-3 h-40 rounded-[30px] bg-black text-white hover:bg-gray-900 active:scale-[0.98] transition-all shadow-lg shadow-gray-200 group"
                     >
-                        <Camera size={28} />
+                        <div className="p-3 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors">
+                            <Camera size={28} />
+                        </div>
                         <span className="font-bold text-sm">Snap Photo</span>
                     </button>
                     <button 
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex flex-col items-center justify-center gap-2 h-32 rounded-3xl bg-gray-50 text-gray-900 hover:bg-gray-100 active:scale-[0.98] transition-all border border-gray-100"
+                        className="flex flex-col items-center justify-center gap-3 h-40 rounded-[30px] bg-gray-50 text-gray-900 hover:bg-gray-100 active:scale-[0.98] transition-all border border-gray-100 group"
                     >
-                        <ImageIcon size={28} />
+                         <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
+                            <ImageIcon size={28} />
+                        </div>
                         <span className="font-bold text-sm">Gallery</span>
                     </button>
                      <input 
@@ -469,10 +473,10 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
 
                 {/* 2. Captured Image Preview */}
                 {image && (
-                    <div className="mb-6 relative rounded-3xl overflow-hidden shadow-sm border border-gray-100 aspect-[4/3] group animate-fade-in">
+                    <div className="mb-6 relative rounded-[30px] overflow-hidden shadow-lg border border-gray-100 aspect-[4/3] group animate-fade-in">
                         <img src={image} alt="Preview" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <button onClick={() => updateState({ image: null })} className="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg">
+                            <button onClick={() => updateState({ image: null })} className="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg hover:bg-red-600 transition-colors">
                                 <Trash2 size={16} /> Remove
                             </button>
                         </div>
@@ -485,17 +489,17 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                         value={text}
                         onChange={(e) => updateState({ text: e.target.value })}
                         placeholder="Add details (e.g. 200g rice and beans)..."
-                        className="w-full bg-gray-50 rounded-3xl p-5 min-h-[140px] text-base font-medium resize-none outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                        className="w-full bg-gray-50 rounded-[30px] p-6 min-h-[160px] text-base font-medium resize-none outline-none focus:ring-2 focus:ring-black/5 transition-all shadow-inner"
                     />
-                    <div className="absolute top-5 right-5 pointer-events-none text-gray-400">
+                    <div className="absolute top-6 right-6 pointer-events-none text-gray-400">
                         <Type size={20} />
                     </div>
                 </div>
 
                 {/* 4. Secondary Actions - Only show when NOT editing an existing analysis */}
                 {!isEditing && (
-                    <div>
-                        <Button variant="outline" onClick={() => updateState({ mode: 'barcode' })} className="w-full border-dashed border-2 py-4 text-gray-500 hover:text-black hover:border-black">
+                    <div className="mb-8">
+                        <Button variant="outline" onClick={() => updateState({ mode: 'barcode' })} className="w-full border-dashed border-2 py-5 text-gray-500 hover:text-black hover:border-black rounded-[20px]">
                             <ScanBarcode size={20}/> Scan Barcode
                         </Button>
                     </div>
@@ -508,147 +512,145 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
         )}
 
         {analysis && !isEditing && (
-            <div className="animate-fade-in space-y-6 pb-24">
+            <div className="animate-fade-in pb-24 grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
-                {/* Confidence Warning */}
-                {analysis.confidenceScore !== undefined && analysis.confidenceScore < 70 && (
-                   <div className="bg-yellow-50 border border-yellow-200 rounded-3xl p-4 flex gap-3 items-start">
-                      <AlertCircle className="text-yellow-600 flex-shrink-0 mt-0.5" size={20} />
-                      <div>
-                        <h4 className="font-bold text-yellow-800 text-sm">Low Confidence ({analysis.confidenceScore}%)</h4>
-                        <p className="text-xs text-yellow-700 font-medium mt-1">
-                          The AI isn't fully sure about this meal. Please verify the name and ingredients below.
-                        </p>
-                      </div>
-                   </div>
-                )}
-
-                 {/* High Risk Warning Banner */}
-                {(analysis.riskSeverity === 'High' || analysis.riskSeverity === 'Medium') && (
-                    <div className={`p-5 rounded-3xl shadow-lg ${analysis.riskSeverity === 'High' ? 'bg-red-600 text-white shadow-red-200' : 'bg-orange-500 text-white shadow-orange-200'}`}>
-                         <div className="flex items-start gap-3">
-                             <AlertTriangle className="text-white flex-shrink-0 mt-1" size={24} />
-                             <div>
-                                 <h4 className="font-bold text-lg leading-tight mb-1">
-                                     {analysis.riskSeverity === 'High' ? 'Malnutrition Risk Alert' : 'Dietary Imbalance Detected'}
-                                 </h4>
-                                 <p className="font-medium opacity-90 text-sm leading-relaxed mb-3">
-                                     {analysis.riskSeverity === 'High' 
-                                        ? "This meal is significantly deficient in key nutrients required for your goals." 
-                                        : "This meal is missing some essential components."}
-                                 </p>
-                                 <div className="bg-white/20 rounded-xl p-3 text-sm font-medium backdrop-blur-sm">
-                                    <strong className="block text-xs uppercase opacity-70 mb-1">Actionable Advice:</strong>
-                                    {analysis.missing && analysis.missing.length > 0 ? `Try adding ${analysis.missing[0]} to balance this meal.` : "Add a source of protein or vegetables."}
-                                 </div>
-                             </div>
-                         </div>
-                    </div>
-                )}
-
-                <div className="flex gap-4 items-start">
-                    <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex-shrink-0 relative group">
+                {/* Left Column: Image & Basic Info */}
+                <div className="lg:col-span-5 space-y-6">
+                    {/* Image */}
+                    <div className="w-full aspect-square rounded-[30px] overflow-hidden shadow-md border border-gray-100 relative group bg-gray-50">
                         {image ? (
                             <img src={image} alt={analysis.name} className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full bg-gray-50 flex items-center justify-center text-gray-300">
-                                <ImageIcon size={32} />
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                <ImageIcon size={48} />
                             </div>
                         )}
+                        <div className="absolute bottom-4 right-4">
+                             <div className="bg-black/70 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-lg">
+                                {analysis.calories} kcal
+                             </div>
+                        </div>
                     </div>
-                    <div className="flex-1">
-                        {/* Editable Name Field */}
+
+                    {/* Name Input */}
+                    <div>
+                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Meal Name</label>
                         <div className="relative group">
                           <input
                             type="text"
                             value={analysis.name}
                             onChange={(e) => updateAnalysis({ name: e.target.value })}
-                            className="text-xl font-bold text-gray-900 leading-tight mb-1 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-black focus:outline-none w-full transition-colors"
+                            className="text-2xl font-bold text-gray-900 leading-tight bg-gray-50 px-4 py-3 rounded-2xl border-2 border-transparent hover:border-gray-200 focus:border-black focus:bg-white focus:outline-none w-full transition-all"
                           />
-                          <Edit3 size={14} className="absolute right-0 top-1 text-gray-300 pointer-events-none group-hover:text-gray-500" />
+                          <Edit3 size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                         </div>
-                        <div className="text-3xl font-extrabold text-gray-900 mt-1">{analysis.calories} <span className="text-sm font-medium text-gray-400">kcal</span></div>
                     </div>
-                </div>
-                
-                {/* Ingredients Editor */}
-                <div className="bg-white border border-gray-100 rounded-3xl p-5">
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Ingredients</h4>
-                    <textarea 
-                        className="w-full text-sm font-medium text-gray-700 bg-gray-50 rounded-xl p-3 focus:ring-2 focus:ring-black/5 outline-none resize-none min-h-[80px]"
-                        value={analysis.ingredients ? analysis.ingredients.join(', ') : ''}
-                        onChange={(e) => updateAnalysis({ ingredients: e.target.value.split(',').map((s: string) => s.trim()) })}
-                        placeholder="List ingredients separated by commas..."
-                    />
-                    <p className="text-[10px] text-gray-400 mt-2 text-right">Edit if needed</p>
-                </div>
 
-                {/* Macros Section */}
-                <div>
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Macronutrients</h4>
-                    <div className="grid grid-cols-3 gap-3">
-                        {[
-                            { l: 'Protein', v: analysis.protein, c: 'bg-green-50 text-green-700' },
-                            { l: 'Carbs', v: analysis.carbs, c: 'bg-blue-50 text-blue-700' },
-                            { l: 'Fats', v: analysis.fats, c: 'bg-gray-50 text-gray-700' }
-                        ].map(m => (
-                            <div key={m.l} className={`text-center py-4 rounded-2xl ${m.c}`}>
-                                <div className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1">{m.l}</div>
-                                <div className="font-extrabold text-xl">{m.v}g</div>
-                            </div>
-                        ))}
+                    {/* Ingredients */}
+                    <div className="bg-white border border-gray-100 rounded-[30px] p-6 shadow-sm">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Ingredients</h4>
+                        <textarea 
+                            className="w-full text-sm font-medium text-gray-700 bg-gray-50 rounded-xl p-3 focus:ring-2 focus:ring-black/5 outline-none resize-none min-h-[100px]"
+                            value={analysis.ingredients ? analysis.ingredients.join(', ') : ''}
+                            onChange={(e) => updateAnalysis({ ingredients: e.target.value.split(',').map((s: string) => s.trim()) })}
+                            placeholder="List ingredients separated by commas..."
+                        />
                     </div>
                 </div>
 
-                {/* Micros Section */}
-                <div>
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Micronutrients</h4>
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-red-50 p-3 rounded-2xl flex flex-col items-center text-center border border-red-100">
-                            <div className="bg-white p-1.5 rounded-full mb-2 text-red-500 shadow-sm"><Droplets size={14}/></div>
-                            <span className="text-lg font-extrabold text-gray-900 leading-none mb-0.5">{analysis.iron || 0}<span className="text-xs font-semibold text-gray-400">mg</span></span>
-                            <span className="text-[10px] font-bold text-red-400 uppercase">Iron</span>
+                {/* Right Column: Detailed Stats */}
+                <div className="lg:col-span-7 space-y-6">
+                    
+                    {/* Warnings */}
+                    {(analysis.confidenceScore < 70 || analysis.riskSeverity === 'High' || analysis.riskSeverity === 'Medium') && (
+                        <div className="space-y-4">
+                            {analysis.confidenceScore < 70 && (
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 flex gap-3 items-center">
+                                    <AlertCircle className="text-yellow-600 flex-shrink-0" size={20} />
+                                    <p className="text-xs text-yellow-800 font-medium">Low confidence. Please verify details.</p>
+                                </div>
+                            )}
+                            {(analysis.riskSeverity === 'High' || analysis.riskSeverity === 'Medium') && (
+                                <div className={`p-4 rounded-2xl flex gap-3 items-center ${analysis.riskSeverity === 'High' ? 'bg-red-50 border border-red-100 text-red-800' : 'bg-orange-50 border border-orange-100 text-orange-800'}`}>
+                                    <AlertTriangle className="flex-shrink-0" size={20} />
+                                    <div>
+                                         <p className="font-bold text-sm">
+                                             {analysis.riskSeverity === 'High' ? 'Malnutrition Risk' : 'Imbalance Detected'}
+                                         </p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        <div className="bg-orange-50 p-3 rounded-2xl flex flex-col items-center text-center border border-orange-100">
-                            <div className="bg-white p-1.5 rounded-full mb-2 text-orange-500 shadow-sm"><Zap size={14}/></div>
-                            <span className="text-lg font-extrabold text-gray-900 leading-none mb-0.5">{analysis.vitaminA || 0}<span className="text-xs font-semibold text-gray-400">mcg</span></span>
-                            <span className="text-[10px] font-bold text-orange-400 uppercase">Vit A</span>
-                        </div>
-                        <div className="bg-indigo-50 p-3 rounded-2xl flex flex-col items-center text-center border border-indigo-100">
-                            <div className="bg-white p-1.5 rounded-full mb-2 text-indigo-500 shadow-sm"><ShieldCheck size={14}/></div>
-                            <span className="text-lg font-extrabold text-gray-900 leading-none mb-0.5">{analysis.zinc || 0}<span className="text-xs font-semibold text-gray-400">mg</span></span>
-                            <span className="text-[10px] font-bold text-indigo-400 uppercase">Zinc</span>
-                        </div>
-                    </div>
-                </div>
+                    )}
 
-                {/* Missing Ingredients */}
-                {analysis.missing && analysis.missing.length > 0 && (
-                    <div className="bg-gray-50 border border-gray-100 p-5 rounded-3xl">
-                        <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
-                            <Info size={16}/> Missing Items
-                        </h4>
-                        <ul className="space-y-2 mb-4">
-                            {analysis.missing.map((m: string, i: number) => (
-                                <li key={i} className="text-sm font-medium text-gray-600 flex gap-2">
-                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-1.5 flex-shrink-0"></span>
-                                    {m}
-                                </li>
+                    {/* Macros */}
+                    <div>
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Macros</h4>
+                        <div className="grid grid-cols-3 gap-4">
+                            {[
+                                { l: 'Protein', v: analysis.protein, c: 'bg-green-50 text-green-700 border-green-100' },
+                                { l: 'Carbs', v: analysis.carbs, c: 'bg-blue-50 text-blue-700 border-blue-100' },
+                                { l: 'Fats', v: analysis.fats, c: 'bg-gray-50 text-gray-700 border-gray-200' }
+                            ].map(m => (
+                                <div key={m.l} className={`text-center py-5 rounded-2xl border ${m.c}`}>
+                                    <div className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1">{m.l}</div>
+                                    <div className="font-extrabold text-2xl">{m.v}g</div>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </div>
-                )}
-                
-                {/* Suggestions */}
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                    <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide"><Check size={16} className="text-black"/> Suggestions</h4>
-                    <div className="space-y-4">
-                        {analysis.suggestions.map((s: string, i: number) => (
-                            <div key={i} className="text-sm text-gray-600 font-medium flex gap-3 leading-relaxed">
-                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></span>
-                                {s}
+
+                    {/* Micros */}
+                    <div>
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Micronutrients</h4>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="bg-red-50 p-4 rounded-2xl flex flex-col items-center text-center border border-red-100 hover:scale-[1.02] transition-transform">
+                                <div className="bg-white p-2 rounded-full mb-2 text-red-500 shadow-sm"><Droplets size={16}/></div>
+                                <span className="text-xl font-extrabold text-gray-900 leading-none mb-1">{analysis.iron || 0}<span className="text-xs font-semibold text-gray-400 ml-0.5">mg</span></span>
+                                <span className="text-[10px] font-bold text-red-400 uppercase">Iron</span>
                             </div>
-                        ))}
+                            <div className="bg-orange-50 p-4 rounded-2xl flex flex-col items-center text-center border border-orange-100 hover:scale-[1.02] transition-transform">
+                                <div className="bg-white p-2 rounded-full mb-2 text-orange-500 shadow-sm"><Zap size={16}/></div>
+                                <span className="text-xl font-extrabold text-gray-900 leading-none mb-1">{analysis.vitaminA || 0}<span className="text-xs font-semibold text-gray-400 ml-0.5">mcg</span></span>
+                                <span className="text-[10px] font-bold text-orange-400 uppercase">Vit A</span>
+                            </div>
+                            <div className="bg-indigo-50 p-4 rounded-2xl flex flex-col items-center text-center border border-indigo-100 hover:scale-[1.02] transition-transform">
+                                <div className="bg-white p-2 rounded-full mb-2 text-indigo-500 shadow-sm"><ShieldCheck size={16}/></div>
+                                <span className="text-xl font-extrabold text-gray-900 leading-none mb-1">{analysis.zinc || 0}<span className="text-xs font-semibold text-gray-400 ml-0.5">mg</span></span>
+                                <span className="text-[10px] font-bold text-indigo-400 uppercase">Zinc</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Missing & Suggestions */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {analysis.missing && analysis.missing.length > 0 && (
+                            <div className="bg-gray-50 border border-gray-100 p-5 rounded-3xl">
+                                <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-xs uppercase tracking-wide">
+                                    <Info size={14}/> Missing
+                                </h4>
+                                <ul className="space-y-2">
+                                    {analysis.missing.slice(0, 3).map((m: string, i: number) => (
+                                        <li key={i} className="text-sm font-medium text-gray-600 flex gap-2">
+                                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-1.5 flex-shrink-0"></span>
+                                            {m}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        
+                        <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2 text-xs uppercase tracking-wide"><Check size={14}/> Suggestions</h4>
+                            <div className="space-y-2">
+                                {analysis.suggestions.slice(0, 3).map((s: string, i: number) => (
+                                    <div key={i} className="text-sm text-gray-600 font-medium flex gap-2 leading-relaxed">
+                                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                                        {s}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -661,9 +663,9 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
 
        {/* Footer Actions */}
        {!isEditing && (
-            <div className="pb-safe px-6 pt-4 pb-6 bg-white/90 backdrop-blur-md sticky bottom-0 border-t border-gray-100">
+            <div className="pb-safe p-6 bg-white/90 backdrop-blur-md sticky bottom-0 border-t border-gray-100 md:rounded-b-[40px]">
                 {analysis ? (
-                    <div className="flex gap-3">
+                    <div className="flex gap-4 max-w-2xl mx-auto w-full">
                          {/* Rescan Button for Corrections */}
                          <Button variant="outline" className="w-14 px-0 flex-shrink-0 border-gray-200" onClick={handleRescan}>
                             <RefreshCw size={20} />
@@ -672,9 +674,11 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                         <Button className="flex-[2]" onClick={handleSave}>Log Meal</Button>
                     </div>
                 ) : (
-                    <Button onClick={handleAnalyze} disabled={!image && !text.trim()}>
-                        Analyze Entry
-                    </Button>
+                    <div className="max-w-2xl mx-auto w-full">
+                        <Button onClick={handleAnalyze} disabled={!image && !text.trim()}>
+                            Analyze Entry
+                        </Button>
+                    </div>
                 )}
             </div>
        )}

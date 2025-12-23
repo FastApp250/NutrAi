@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { AppProvider, useApp } from './AppContext';
 import { Onboarding } from './pages/Onboarding';
 import { Home } from './pages/Home';
@@ -7,37 +7,12 @@ import { Input } from './pages/Input';
 import { Tracker } from './pages/Tracker';
 import { Plans } from './pages/Plans';
 import { Profile } from './pages/Profile';
-import { NavItem } from './components/UI';
+import { NavItem, SidebarItem, Logo } from './components/UI';
 import { Home as HomeIcon, Plus, BarChart2, User as UserIcon, Activity } from 'lucide-react';
 
 const AppContent = () => {
   const { user, loading } = useApp();
   const [currentPage, setCurrentPage] = useState('home');
-  const [isScrollingDown, setIsScrollingDown] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const lastScrollTop = useRef(0);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
-
-    const handleScroll = () => {
-      const scrollTop = scrollContainer.scrollTop;
-      
-      if (scrollTop > lastScrollTop.current && scrollTop > 50) {
-        // Scrolling down
-        setIsScrollingDown(true);
-      } else if (scrollTop < lastScrollTop.current) {
-        // Scrolling up
-        setIsScrollingDown(false);
-      }
-      
-      lastScrollTop.current = scrollTop;
-    };
-
-    scrollContainer.addEventListener('scroll', handleScroll);
-    return () => scrollContainer.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Loading Screen
   if (loading) {
@@ -52,25 +27,49 @@ const AppContent = () => {
   }
 
   // Common Wrapper
-  // Removed vibrant gradient. Using a subtle off-white/gray gradient to allow glassmorphism to still have depth.
   return (
-    <div className="h-[100dvh] w-full bg-gradient-to-b from-gray-50 to-gray-100 sm:max-w-md sm:mx-auto sm:border-x sm:border-gray-200 relative shadow-2xl flex flex-col overflow-hidden text-gray-900 font-sans selection:bg-gray-200">
+    <div className="h-[100dvh] w-full bg-gray-50 flex overflow-hidden font-sans selection:bg-gray-200">
       
-      {/* Very subtle background blobs to maintain depth for glass effects without color intensity */}
-      <div className="absolute top-[-20%] right-[-20%] w-[80%] h-[50%] bg-blue-100/30 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[40%] bg-purple-100/30 rounded-full blur-[100px] pointer-events-none"></div>
+      {/* Background Blobs (Global) */}
+      <div className="fixed top-[-20%] right-[-20%] w-[80%] h-[50%] bg-blue-100/30 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="fixed bottom-[-10%] left-[-10%] w-[60%] h-[40%] bg-purple-100/30 rounded-full blur-[100px] pointer-events-none"></div>
 
-      {/* Conditional Rendering: Onboarding vs Main App */}
-      {(!user || !user.onboarded) ? (
-        // Onboarding takes full control of the layout
-        <div className="flex-1 w-full h-full overflow-hidden relative z-10">
-            <Onboarding />
+      {/* Desktop Sidebar (Only visible on md+ and when onboarded) */}
+      {user && user.onboarded && (
+        <div className="hidden md:flex flex-col w-64 h-full bg-white/80 backdrop-blur-xl border-r border-gray-200 p-6 z-50 relative shrink-0">
+            <div className="mb-10 pl-2">
+                <Logo />
+            </div>
+            
+            <div className="space-y-2 flex-1">
+                <SidebarItem Icon={HomeIcon} label="Home" active={currentPage === 'home'} onClick={() => setCurrentPage('home')} />
+                <SidebarItem Icon={Activity} label="Analysis" active={currentPage === 'tracker'} onClick={() => setCurrentPage('tracker')} />
+                <SidebarItem Icon={BarChart2} label="Plans" active={currentPage === 'plans'} onClick={() => setCurrentPage('plans')} />
+                <SidebarItem Icon={UserIcon} label="Profile" active={currentPage === 'profile'} onClick={() => setCurrentPage('profile')} />
+            </div>
+
+            <button 
+                onClick={() => setCurrentPage('input')}
+                className="mt-auto w-full py-4 bg-black text-white rounded-2xl flex items-center justify-center gap-2 font-bold hover:bg-gray-800 transition-all shadow-xl shadow-black/10 active:scale-95"
+            >
+                <Plus size={20} /> Log Meal
+            </button>
         </div>
-      ) : (
-        // Main App Layout
-        <>
-          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto no-scrollbar scroll-smooth relative z-10">
-            <div className="pt-safe pb-28 min-h-full">
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 h-full relative overflow-y-auto no-scrollbar scroll-smooth z-10">
+        
+        {(!user || !user.onboarded) ? (
+            // Onboarding Wrapper
+            <div className="min-h-full flex items-center justify-center p-0 md:p-8">
+                <div className="w-full h-full md:h-auto md:max-w-md md:aspect-[9/16] md:max-h-[850px] bg-white md:rounded-[40px] md:shadow-2xl overflow-hidden relative">
+                     <Onboarding />
+                </div>
+            </div>
+        ) : (
+            // App Pages Wrapper
+            <div className="pt-safe pb-28 md:pb-8 md:pt-8 min-h-full px-0 md:px-8 max-w-7xl mx-auto">
                 {(() => {
                     switch (currentPage) {
                       case 'home': return <Home onNavigate={setCurrentPage} />;
@@ -82,34 +81,29 @@ const AppContent = () => {
                     }
                 })()}
             </div>
-          </div>
+        )}
 
-          {/* Floating Glass Navbar */}
-          <div className="absolute bottom-0 left-0 right-0 z-50 pb-safe">
-            <div className={`bg-white border-t border-gray-200 px-4 py-3 flex items-center relative ${
-              currentPage === 'input' ? 'justify-around gap-4' : 'justify-between'
-            }`}>
-              <NavItem Icon={HomeIcon} label="Dashboard" active={currentPage === 'home'} onClick={() => setCurrentPage('home')} />
-              <NavItem Icon={Activity} label="Meals" active={currentPage === 'tracker'} onClick={() => setCurrentPage('tracker')} />
-              
-              {/* Center Action Button */}
-              <button 
-                  onClick={() => setCurrentPage(currentPage === 'input' ? 'home' : 'input')}
-                  className={`w-14 h-14 flex-shrink-0 aspect-square bg-black rounded-full flex items-center justify-center text-white transition-all duration-300 ease-out active:scale-95 ${
-                    currentPage === 'input' ? '-top-7' : 'mx-6'
-                  } ${
-                    isScrollingDown && currentPage !== 'input' ? 'scale-0 rotate-180' : 'scale-100 rotate-0'
-                  }`}
-              >
-                  <Plus size={28} strokeWidth={2.5} className={`transition-transform duration-300 ${currentPage === 'input' ? 'rotate-45' : 'rotate-0'}`} />
-              </button>
-              
-              <NavItem Icon={BarChart2} label="Meal Plan" active={currentPage === 'plans'} onClick={() => setCurrentPage('plans')} />
-              <NavItem Icon={UserIcon} label="Progress" active={currentPage === 'profile'} onClick={() => setCurrentPage('profile')} />
+        {/* Mobile Navigation (Floating) */}
+        {user && user.onboarded && currentPage !== 'input' && (
+            <div className="md:hidden fixed bottom-6 left-4 right-4 z-50 max-w-md mx-auto">
+              <div className="bg-white/80 backdrop-blur-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-3xl px-6 py-4 flex justify-between items-center transition-all">
+                <NavItem Icon={HomeIcon} label="Home" active={currentPage === 'home'} onClick={() => setCurrentPage('home')} />
+                <NavItem Icon={Activity} label="Analysis" active={currentPage === 'tracker'} onClick={() => setCurrentPage('tracker')} />
+                
+                {/* Center Action Button */}
+                <button 
+                    onClick={() => setCurrentPage('input')}
+                    className="w-14 h-14 flex-shrink-0 aspect-square bg-black/90 backdrop-blur-md rounded-full shadow-lg shadow-gray-400/50 flex items-center justify-center text-white transition-transform active:scale-95 -mt-8 border-[3px] border-white"
+                >
+                    <Plus size={28} strokeWidth={2.5} />
+                </button>
+                
+                <NavItem Icon={BarChart2} label="Plans" active={currentPage === 'plans'} onClick={() => setCurrentPage('plans')} />
+                <NavItem Icon={UserIcon} label="Profile" active={currentPage === 'profile'} onClick={() => setCurrentPage('profile')} />
+              </div>
             </div>
-          </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };
