@@ -72,7 +72,7 @@ export const Profile = () => {
               </div>
               <div className="w-full h-px bg-gray-200/50"></div>
               <div>
-                  <strong className="block text-gray-900">Colbe Maximilliene</strong>
+                  <strong className="block text-gray-900">Kolbe Maximillien</strong>
               </div>
               <div className="w-full h-px bg-gray-200/50"></div>
               <div>

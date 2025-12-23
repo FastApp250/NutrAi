@@ -441,7 +441,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
         <h1 className="text-3xl font-extrabold text-gray-900 mb-6">{analysis ? 'Meal Breakdown' : 'What did you eat?'}</h1>
 
         {(!analysis || isEditing) && (
-            <div className={`transition-all ${isEditing ? 'pb-24' : ''}`}>
+            <div className={`transition-all ${isEditing ? 'pb-2' : ''}`}>
                 {/* 1. Camera Control Row */}
                 <div className="grid grid-cols-2 gap-3 mb-6 flex-shrink-0">
                     <button 
@@ -494,7 +494,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
 
                 {/* 4. Secondary Actions - Only show when NOT editing an existing analysis */}
                 {!isEditing && (
-                    <div className="mb-8">
+                    <div>
                         <Button variant="outline" onClick={() => updateState({ mode: 'barcode' })} className="w-full border-dashed border-2 py-4 text-gray-500 hover:text-black hover:border-black">
                             <ScanBarcode size={20}/> Scan Barcode
                         </Button>
@@ -661,7 +661,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
 
        {/* Footer Actions */}
        {!isEditing && (
-            <div className="pb-safe p-6 bg-white/90 backdrop-blur-md sticky bottom-0 border-t border-gray-100">
+            <div className="pb-safe px-6 pt-4 pb-6 bg-white/90 backdrop-blur-md sticky bottom-0 border-t border-gray-100">
                 {analysis ? (
                     <div className="flex gap-3">
                          {/* Rescan Button for Corrections */}

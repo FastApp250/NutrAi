@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppProvider, useApp } from './AppContext';
 import { Onboarding } from './pages/Onboarding';
 import { Home } from './pages/Home';
@@ -13,6 +13,31 @@ import { Home as HomeIcon, Plus, BarChart2, User as UserIcon, Activity } from 'l
 const AppContent = () => {
   const { user, loading } = useApp();
   const [currentPage, setCurrentPage] = useState('home');
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const lastScrollTop = useRef(0);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      const scrollTop = scrollContainer.scrollTop;
+      
+      if (scrollTop > lastScrollTop.current && scrollTop > 50) {
+        // Scrolling down
+        setIsScrollingDown(true);
+      } else if (scrollTop < lastScrollTop.current) {
+        // Scrolling up
+        setIsScrollingDown(false);
+      }
+      
+      lastScrollTop.current = scrollTop;
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll);
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Loading Screen
   if (loading) {
@@ -44,7 +69,7 @@ const AppContent = () => {
       ) : (
         // Main App Layout
         <>
-          <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth relative z-10">
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto no-scrollbar scroll-smooth relative z-10">
             <div className="pt-safe pb-28 min-h-full">
                 {(() => {
                     switch (currentPage) {
@@ -60,25 +85,29 @@ const AppContent = () => {
           </div>
 
           {/* Floating Glass Navbar */}
-          {currentPage !== 'input' && (
-            <div className="absolute bottom-6 left-4 right-4 z-50">
-              <div className="bg-white/80 backdrop-blur-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-3xl px-6 py-4 flex justify-between items-center transition-all">
-                <NavItem Icon={HomeIcon} label="Home" active={currentPage === 'home'} onClick={() => setCurrentPage('home')} />
-                <NavItem Icon={Activity} label="Analysis" active={currentPage === 'tracker'} onClick={() => setCurrentPage('tracker')} />
-                
-                {/* Center Action Button */}
-                <button 
-                    onClick={() => setCurrentPage('input')}
-                    className="w-14 h-14 flex-shrink-0 aspect-square bg-black/90 backdrop-blur-md rounded-full shadow-lg shadow-gray-400/50 flex items-center justify-center text-white transition-transform active:scale-95 -mt-8 border-[3px] border-white"
-                >
-                    <Plus size={28} strokeWidth={2.5} />
-                </button>
-                
-                <NavItem Icon={BarChart2} label="Plans" active={currentPage === 'plans'} onClick={() => setCurrentPage('plans')} />
-                <NavItem Icon={UserIcon} label="Profile" active={currentPage === 'profile'} onClick={() => setCurrentPage('profile')} />
-              </div>
+          <div className="absolute bottom-0 left-0 right-0 z-50 pb-safe">
+            <div className={`bg-white border-t border-gray-200 px-4 py-3 flex items-center relative ${
+              currentPage === 'input' ? 'justify-around gap-4' : 'justify-between'
+            }`}>
+              <NavItem Icon={HomeIcon} label="Dashboard" active={currentPage === 'home'} onClick={() => setCurrentPage('home')} />
+              <NavItem Icon={Activity} label="Meals" active={currentPage === 'tracker'} onClick={() => setCurrentPage('tracker')} />
+              
+              {/* Center Action Button */}
+              <button 
+                  onClick={() => setCurrentPage(currentPage === 'input' ? 'home' : 'input')}
+                  className={`w-14 h-14 flex-shrink-0 aspect-square bg-black rounded-full flex items-center justify-center text-white transition-all duration-300 ease-out active:scale-95 ${
+                    currentPage === 'input' ? '-top-7' : 'mx-6'
+                  } ${
+                    isScrollingDown && currentPage !== 'input' ? 'scale-0 rotate-180' : 'scale-100 rotate-0'
+                  }`}
+              >
+                  <Plus size={28} strokeWidth={2.5} className={`transition-transform duration-300 ${currentPage === 'input' ? 'rotate-45' : 'rotate-0'}`} />
+              </button>
+              
+              <NavItem Icon={BarChart2} label="Meal Plan" active={currentPage === 'plans'} onClick={() => setCurrentPage('plans')} />
+              <NavItem Icon={UserIcon} label="Progress" active={currentPage === 'profile'} onClick={() => setCurrentPage('profile')} />
             </div>
-          )}
+          </div>
         </>
       )}
     </div>

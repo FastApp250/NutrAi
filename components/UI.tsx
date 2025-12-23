@@ -46,20 +46,20 @@ export const Button = ({
   type?: 'button' | 'submit' | 'reset';
 }) => {
   // Cal AI / Liquid Glass Style: Rounded-full, backdrop blur, transparency, borders
-  const baseStyles = "w-full py-4 px-6 rounded-full font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 backdrop-blur-xl border shadow-lg";
+  const baseStyles = "w-full py-4 px-6 rounded-full font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 backdrop-blur-xl border";
   
   const variants = {
     // Black with glass effect
-    primary: "bg-black/80 border-white/20 text-white hover:bg-black/90 shadow-black/10",
+    primary: "bg-black/80 border-white/20 text-white hover:bg-black/90",
     
     // Green with glass effect
-    secondary: "bg-green-600/80 border-white/20 text-white hover:bg-green-600/90 shadow-green-600/20",
+    secondary: "bg-green-600/80 border-white/20 text-white hover:bg-green-600/90",
     
     // Outline glass
     outline: "bg-white/30 border-gray-200 text-gray-900 hover:bg-white/50 hover:border-gray-400",
     
     // Ghost (minimal glass on hover)
-    ghost: "bg-transparent border-transparent text-gray-600 hover:bg-gray-100/50 shadow-none",
+    ghost: "bg-transparent border-transparent text-gray-600 hover:bg-gray-100/50",
     
     // Danger glass
     danger: "bg-red-50/80 border-red-100 text-red-600 hover:bg-red-100/80"
@@ -121,12 +121,11 @@ export const InputField = ({
 export const NavItem = ({ Icon, label, active, onClick }: { Icon: LucideIcon; label: string; active: boolean; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className={`flex flex-col items-center justify-center space-y-1.5 w-full py-1 transition-all duration-300 ${
-      active ? 'text-black scale-105' : 'text-gray-400 hover:text-gray-600'
+    className={`flex flex-col items-center justify-center gap-1 py-2 transition-all duration-200 ${
+      active ? 'text-black' : 'text-gray-400'
     }`}
   >
-    <Icon size={24} strokeWidth={active ? 2.5 : 2} className={active ? "fill-black/5" : ""} />
-    {/* Label removed for cleaner look or kept very small */}
-    {/* <span className="text-[10px] font-medium">{label}</span> */}
+    <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+    <span className={`text-[11px] font-medium ${active ? 'font-semibold' : ''}`}>{label}</span>
   </button>
 );

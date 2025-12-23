@@ -212,9 +212,7 @@ export const Home = ({ onNavigate }: { onNavigate: (page: string) => void }) => 
 
       {/* AI Insight Pill */}
       <div className="bg-black text-white p-5 rounded-3xl flex gap-4 items-center shadow-lg shadow-gray-200">
-        <div className="bg-white/20 p-2.5 rounded-full backdrop-blur-sm">
-            <Sparkles size={18} className="text-yellow-300" />
-        </div>
+        
         <div>
             <h3 className="text-xs font-bold text-white/60 uppercase tracking-wider mb-0.5">AI Insight</h3>
             <p className="text-sm font-medium leading-snug">{tip}</p>

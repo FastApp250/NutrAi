@@ -45,7 +45,7 @@ export const Tracker = () => {
       <section>
         <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <BrainCircuit size={20} className="text-indigo-600"/> AI Health Check
+                 AI Health Check
             </h3>
             {!audit && logs.length > 0 && (
                 <Button onClick={runAudit} disabled={loadingAudit} className="w-auto py-2 px-4 text-xs h-auto bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200">
@@ -139,11 +139,11 @@ export const Tracker = () => {
 
       {/* Charts Section */}
       <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mt-8">
-         <Activity size={20} className="text-gray-500"/> Trends
+         Trends
       </h3>
 
       {/* Micronutrient Trend - Critical for Malnutrition */}
-      <Card className="border-none shadow-md bg-white">
+      <Card className="border-gray-100 bg-white">
         <div className="flex items-center justify-between mb-8">
             <div>
                 <span className="text-xs font-bold text-red-500 uppercase tracking-wider block mb-1">Critical Nutrient</span>
