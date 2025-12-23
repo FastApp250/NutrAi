@@ -4,6 +4,7 @@ import { UserProfile, MealLog, HealthAudit } from "./types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+// Updated to use the latest flash preview model which has fresh rate limits
 const MODEL_TEXT = 'gemini-3-flash-preview';
 const MODEL_VISION = 'gemini-3-flash-preview'; 
 
