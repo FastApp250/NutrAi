@@ -236,7 +236,7 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
     updateState({ mode: 'analyzing' });
     const result = await analyzeMeal(image, text, user);
 
-    // AI Determined it is NOT food
+    // AI Determined it is NOT food OR there was an API Error
     if (result.isFood === false) {
       setErrorModal(result.message || "This doesn't look like a valid food item. Please try capturing the meal again.");
       // Keep mode as is or switch to initial but keep image so they can see what was wrong
@@ -420,7 +420,9 @@ export const Input = ({ onBack, onComplete }: { onBack: () => void; onComplete: 
                <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
                    <AlertTriangle size={32} />
                </div>
-               <h3 className="text-xl font-bold text-gray-900 mb-2">Not recognized as food</h3>
+               <h3 className="text-xl font-bold text-gray-900 mb-2">
+                   {errorModal.includes("API") ? "Authorization Error" : "Not recognized as food"}
+               </h3>
                <p className="text-gray-600 mb-6 text-sm leading-relaxed">{errorModal}</p>
                <Button onClick={() => setErrorModal(null)}>
                    Try Again

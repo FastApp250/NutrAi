@@ -2,11 +2,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserProfile, MealLog, HealthAudit } from "./types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-// Updated to use the latest flash preview model which has fresh rate limits
+// Using the latest flash preview model as requested
 const MODEL_TEXT = 'gemini-3-flash-preview';
 const MODEL_VISION = 'gemini-3-flash-preview'; 
+
+// Helper to get a fresh AI instance
+const getAi = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const generateOnboardingProfile = async (
   age: number,
@@ -16,6 +17,7 @@ export const generateOnboardingProfile = async (
   goals: string[]
 ): Promise<{ dailyCalories: number; protein: number; carbs: number; fats: number; iron: number; vitaminA: number; zinc: number; calcium: number; folate: number; iodine: number; message: string }> => {
   try {
+    const ai = getAi();
     const prompt = `
       Act as a professional nutritionist specializing in Rwandan health and malnutrition prevention.
       Calculate the nutritional needs for a person with:
@@ -103,6 +105,7 @@ export const analyzeMeal = async (
   confidenceScore: number;
 }> => {
   try {
+    const ai = getAi();
     const parts: any[] = [];
     
     if (imageBase64) {
@@ -172,10 +175,39 @@ export const analyzeMeal = async (
     const text = response.text;
     if (!text) throw new Error("No response from AI");
     return JSON.parse(text);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini Analysis Error:", error);
+
+    // If the error is related to API permissions (leaked key, invalid key, 403), 
+    // we should NOT return the generic "Unknown Meal" fallback, but rather an error state
+    // so the UI can prompt the user to fix their key.
+    if (error.toString().includes("403") || error.toString().includes("API key")) {
+        return {
+            isFood: false,
+            message: "Authorization Error: The API key is invalid or has been revoked. Please check your .env file.",
+            name: "",
+            ingredients: [],
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fats: 0,
+            iron: 0,
+            vitaminA: 0,
+            zinc: 0,
+            calcium: 0,
+            folate: 0,
+            iodine: 0,
+            suggestions: [],
+            alerts: [],
+            missing: [],
+            riskSeverity: 'Low',
+            confidenceScore: 0
+        };
+    }
+
+    // Generic fallback for other errors (e.g. timeout, network)
     return {
-      isFood: true, // Fallback to allow manual entry if AI fails
+      isFood: true, // Allow manual entry
       name: "Unknown Meal",
       ingredients: [],
       calories: 0,
@@ -199,6 +231,7 @@ export const analyzeMeal = async (
 
 export const generateDailyTip = async (goals: string[]): Promise<string> => {
   try {
+    const ai = getAi();
     const response = await ai.models.generateContent({
       model: MODEL_TEXT,
       contents: `Give me a single, short (under 20 words) nutrition tip for a Rwandan user. Focus on their goals: ${goals.join(", ")}. Prioritize local foods.`,
@@ -211,6 +244,7 @@ export const generateDailyTip = async (goals: string[]): Promise<string> => {
 
 export const generateNotificationTip = async (user: UserProfile, logs: MealLog[]): Promise<string> => {
     try {
+        const ai = getAi();
         const todayLogs = logs.filter(log => {
             const d = new Date(log.timestamp);
             const t = new Date();
@@ -240,6 +274,7 @@ export const generateNotificationTip = async (user: UserProfile, logs: MealLog[]
 
 export const generateMealPlan = async (user: UserProfile): Promise<any> => {
   try {
+    const ai = getAi();
     const prompt = `
       Create a 1-day meal plan for a user in Rwanda to prevent malnutrition.
       User: ${user.age} years old, Goals: ${user.goals.join(", ")}.
@@ -281,6 +316,7 @@ export const generateMealPlan = async (user: UserProfile): Promise<any> => {
 
 export const generateHealthAudit = async (user: UserProfile, logs: MealLog[]): Promise<HealthAudit | null> => {
   try {
+    const ai = getAi();
     // Summarize logs for token efficiency
     const logSummary = logs.map(l => ({
       name: l.name,
